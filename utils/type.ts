@@ -1,6 +1,6 @@
 export type RawAsset = {
   id: number;
-  asssetName: string;
+  assetName: string;
   amount: number;
   buyPrice: number;
   buyAt: Date | null;

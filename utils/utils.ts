@@ -20,3 +20,10 @@
 //     }),
 //   };
 // };
+
+export const convertToChartType = (item: RawAsset): Asset => {
+  return {
+    name: item.assetName,
+    value: item.amount ? item.amount * item.buyPrice : item.buyPrice,
+  };
+};

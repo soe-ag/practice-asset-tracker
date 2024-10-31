@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const client = useSupabaseClient();
+// const client = useSupabaseClient();
 
 // const { data, refresh } = await useAsyncData<DbMovie[]>(
 //   "favoriteList",
@@ -11,5 +11,5 @@ const client = useSupabaseClient();
 </script>
 
 <template>
-  <div class="py-2"></div>
+  <div class="py-2">fav</div>
 </template>

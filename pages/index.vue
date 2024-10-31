@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useRuntimeConfig } from "#app";
+// import { useRuntimeConfig } from "#app";
 
-const config = useRuntimeConfig();
+const client = useSupabaseClient();
 
 // let isShowSearchResult = false;
 
@@ -10,18 +10,20 @@ const config = useRuntimeConfig();
 
 // const popularCurrentPage = ref(1);
 
-// const { data, refresh } = await useAsyncData(
-//   "fetchPopularMovies",
-//   () =>
-//     $fetch<RawMovieWithTotal>(`https://api.themoviedb.org/3/movie/popular`, {
-//       params: {
-//         api_key: config.public.tmdbApiKey,
-//         language: "en-US",
-//         page: popularCurrentPage.value,
-//       },
-//     }),
-//   { watch: [() => popularCurrentPage.value, () => isShowSearchResult] } // re-fetch
-// );
+const { data } = await useAsyncData<RawAsset[]>(
+  "fetchAsset",
+  async () => {
+    const { data } = await client.from("assetList").select();
+    return data as RawAsset[];
+  }
+  // { watch: [() => popularCurrentPage.value, () => isShowSearchResult] } // re-fetch
+);
+
+const assetList = computed<Asset[]>(() => {
+  if (data.value) {
+    return data.value.map((item) => convertToChartType(item));
+  } else return [];
+});
 
 // const popularMovies = computed(() => {
 //   if (data.value) {
@@ -71,6 +73,7 @@ const config = useRuntimeConfig();
 
 <template>
   <div class="py-2 mx-4">
+    <pre>{{ assetList }}</pre>
     <!-- <div class="flex gap-4 my-2">
       <Button
         label="Trending"
