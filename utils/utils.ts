@@ -21,9 +21,17 @@
 //   };
 // };
 
-export const convertToChartType = (item: RawAsset): Asset => {
+export const convertToSimpleType = (item: RawAsset): Asset => {
   return {
     name: item.assetName,
-    value: item.amount ? item.amount * item.buyPrice : item.buyPrice,
+    value: item.amount
+      ? item.amount * item.buyPrice
+      : item.isYen
+      ? item.buyPrice
+      : convertDollarToYen(item.buyPrice, 152),
   };
+};
+
+const convertDollarToYen = (dollar: number, rate: number): number => {
+  return dollar * rate;
 };

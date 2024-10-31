@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { ChartOptions } from "chart.js";
+import { convertToSimpleType } from "~/utils/utils";
+
 // import { useRuntimeConfig } from "#app";
 
 const client = useSupabaseClient();
@@ -21,7 +24,7 @@ const { data } = await useAsyncData<RawAsset[]>(
 
 const assetList = computed<Asset[]>(() => {
   if (data.value) {
-    return data.value.map((item) => convertToChartType(item));
+    return data.value.map((item) => convertToSimpleType(item));
   } else return [];
 });
 
@@ -69,11 +72,58 @@ const assetList = computed<Asset[]>(() => {
 //     await fetchSearchResults(1);
 //   }
 // };
+
+const chartData = computed(() => {
+  const labels: string[] = assetList.value.map((item) => item.name);
+  const data: number[] = assetList.value.map((item) => item.value);
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: "value(yen)",
+        data,
+        backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+      },
+    ],
+  };
+});
+
+interface ChartOptionsWithRadius extends ChartOptions {
+  radius?: number;
+}
+
+const chartOption: ChartOptionsWithRadius = {
+  // responsive: true,
+  maintainAspectRatio: false,
+  radius: 120,
+  plugins: {
+    legend: {
+      position: "right",
+      labels: {
+        boxWidth: 15,
+        font: {
+          size: 14,
+        },
+      },
+    },
+
+    tooltip: {
+      enabled: true,
+    },
+  },
+};
 </script>
 
 <template>
-  <div class="py-2 mx-4">
-    <pre>{{ assetList }}</pre>
+  <div class="py-2 mx-4 h-100vh bg-gray-300 w-80vh">
+    <!-- <pre>{{ assetList }}</pre> -->
+    <PartsChart
+      type="doughnut"
+      :data="chartData"
+      :options="chartOption"
+      class="w-100 m-auto h-100"
+    />
     <!-- <div class="flex gap-4 my-2">
       <Button
         label="Trending"
