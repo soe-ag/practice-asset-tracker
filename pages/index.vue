@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import type { ChartOptions } from "chart.js";
 import { convertToSimpleType } from "~/utils/utils";
+import { useRuntimeConfig } from "#app";
 
-// import { useRuntimeConfig } from "#app";
-
+const config = useRuntimeConfig();
 const client = useSupabaseClient();
-
-// let isShowSearchResult = false;
-
-// const searchQuery = ref("");
-// let searchQueryLabel = "";
-
-// const popularCurrentPage = ref(1);
 
 const { data } = await useAsyncData<RawAsset[]>(
   "fetchAsset",
@@ -28,44 +21,79 @@ const assetList = computed<Asset[]>(() => {
   } else return [];
 });
 
-// const popularMovies = computed(() => {
-//   if (data.value) {
-//     isShowSearchResult = false;
-//     return convertToDbType(data.value);
-//   } else return { movies: [], totalResults: 0 };
-// });
+const firstRawData = ref();
+const firstData = ref<
+  {
+    index: number;
+    close: number;
+  }[]
+>();
+const fetchStockData = async () => {
+  const symbol = "IBM";
+  const apiKey = config.public.stockApiKey;
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
 
-// // search function area
+  try {
+    firstRawData.value = await $fetch(url);
 
-// const searchResults = ref<DbMovie[]>([]);
-// const searchTotal = ref(0);
-// const searchCurrentPage = ref(1);
+    const timeSeries = Object.entries(
+      firstRawData.value["Time Series (Daily)"] as Record<string, DailyData>
+    );
 
-// const fetchSearchResults = async (page: number) => {
-//   const searchData = await $fetch<RawMovieWithTotal>(
-//     "https://api.themoviedb.org/3/search/multi",
-//     {
-//       params: {
-//         api_key: config.public.tmdbApiKey,
-//         include_adult: false,
-//         query: searchQuery.value,
-//         language: "en-US",
-//         page,
+    firstData.value = timeSeries.map(([_, day], index) => ({
+      index, // The index of the day
+      close: Math.round(Number(day["4. close"])),
+    }));
+    console.log(firstData.value.slice(0, 10)); // This should log an array of numbers
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+  }
+};
+
+onMounted(() => {
+  fetchStockData();
+});
+
+// const config2 = {
+//   type: "line",
+//   data: {
+//     datasets: [
+//       {
+//         borderColor: "#417ABE",
+//         borderWidth: 1,
+//         radius: 0,
+//         data: firstData.value,
 //       },
-//     }
-//   );
-
-//   isShowSearchResult = true;
-//   searchQueryLabel = searchQuery.value; // for search query label
-//   // searchQuery.value = ""; if clear, pagination will not work
-
-//   searchResults.value = convertToDbType(searchData).movies.filter(
-//     (item) => item.type !== "person"
-//   );
-//   searchTotal.value = searchData.total_results; // for pagination
+//       {
+//         borderColor: "#00B8CD",
+//         borderWidth: 1,
+//         radius: 0,
+//         data: firstData.value,
+//       },
+//     ],
+//   },
 // };
 
-// };
+const chartData2 = computed(() => {
+  const labels: number[] = firstData.value
+    ? firstData.value.map((item) => item.index)
+    : [];
+  const data: number[] = firstData.value
+    ? firstData.value.map((item) => item.close)
+    : [];
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: "value(yen)",
+        data,
+        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+        backgroundColor: "#417ABE",
+      },
+    ],
+  };
+});
 
 // const handleEnter = async (event: KeyboardEvent) => {
 //   if (event.key === "Enter") {
@@ -113,17 +141,37 @@ const chartOption: ChartOptionsWithRadius = {
     },
   },
 };
+
+const chartOption2: ChartOptions = {
+  plugins: {
+    legend: {
+      position: "right",
+    },
+    title: {
+      display: true,
+      text: "Chart.js Line Chart",
+    },
+  },
+};
 </script>
 
 <template>
-  <div class="py-2 mx-4 h-100vh bg-gray-300 w-80vh">
-    <!-- <pre>{{ assetList }}</pre> -->
+  <div class="py-2 mx-4 h-100vh bg-gray-300 w-100vw">
+    <!-- <pre>{{ firstData }}</pre> -->
     <PartsChart
       type="doughnut"
       :data="chartData"
       :options="chartOption"
       class="w-100 m-auto h-100"
     />
+
+    <PartsChart
+      type="line"
+      :data="chartData2"
+      :options="chartOption2"
+      class="w-200 m-auto h-100"
+    />
+
     <!-- <div class="flex gap-4 my-2">
       <Button
         label="Trending"

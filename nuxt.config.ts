@@ -8,7 +8,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      tmdbApiKey: process.env.TMDB_API_KEY,
+      stockApiKey: process.env.ALPHA_VANTAGE_API_KEY,
     },
   },
 
