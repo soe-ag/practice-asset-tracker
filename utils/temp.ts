@@ -86,3 +86,52 @@
 //       },
 //     },
 //   };
+
+// old doughnut chart
+// const chartData = computed(() => {
+//     const labels: string[] = assetList.value.map((item) => item.name);
+//     const data: number[] = assetList.value.map((item) => item.value);
+
+//     return {
+//       labels,
+//       datasets: [
+//         {
+//           label: "value(yen)",
+//           data,
+//           backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         },
+//       ],
+//     };
+//   });
+
+//   interface ChartOptionsWithRadius extends ChartOptions {
+//     radius?: number;
+//   }
+
+//   const chartOption: ChartOptionsWithRadius = {
+//     // responsive: true,
+//     maintainAspectRatio: false,
+//     radius: 120,
+//     plugins: {
+//       legend: {
+//         position: "right",
+//         labels: {
+//           boxWidth: 15,
+//           font: {
+//             size: 14,
+//           },
+//         },
+//       },
+
+//       tooltip: {
+//         enabled: true,
+//       },
+//     },
+//   };
+
+// <PartsChart
+// type="doughnut"
+// :data="chartData"
+// :options="chartOption"
+// class="w-100 m-auto h-100"
+// />

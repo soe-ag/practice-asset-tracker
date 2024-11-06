@@ -1,82 +1,73 @@
 <script setup lang="ts">
 import type { ChartOptions } from "chart.js";
-import { convertToSimpleType } from "~/utils/utils";
+// import { convertToSimpleType } from "~/utils/utils";
 import { useRuntimeConfig } from "#app";
+import testdata from "~/utils/testdata.json";
 
 const config = useRuntimeConfig();
-const client = useSupabaseClient();
+// const client = useSupabaseClient();
 
-const { data } = await useAsyncData<RawAsset[]>(
-  "fetchAsset",
-  async () => {
-    const { data } = await client.from("assetList").select();
-    return data as RawAsset[];
-  }
-  // { watch: [() => popularCurrentPage.value, () => isShowSearchResult] } // re-fetch
-);
+// const { data } = await useAsyncData<RawAsset[]>(
+//   "fetchAsset",
+//   async () => {
+//     const { data } = await client.from("assetList").select();
+//     return data as RawAsset[];
+//   }
+//   // { watch: [() => popularCurrentPage.value, () => isShowSearchResult] } // re-fetch
+// );
 
-const assetList = computed<Asset[]>(() => {
-  if (data.value) {
-    return data.value.map((item) => convertToSimpleType(item));
-  } else return [];
-});
+// const assetList = computed<Asset[]>(() => {
+//   if (data.value) {
+//     return data.value.map((item) => convertToSimpleType(item));
+//   } else return [];
+// });
 
 const firstRawData = ref();
 const firstData = ref<
   {
-    index: number;
+    date: string;
     close: number;
   }[]
 >();
-const fetchStockData = async () => {
-  const symbol = "IBM";
-  const apiKey = config.public.stockApiKey;
-  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
+// const fetchStockData = async (symbol: string) => {
+//   // const symbol = "TSLA";
+//   const apiKey = config.public.stockApiKey;
+//   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
 
-  try {
-    firstRawData.value = await $fetch(url);
+//   try {
+//     firstRawData.value = await $fetch(url);
 
-    const timeSeries = Object.entries(
-      firstRawData.value["Time Series (Daily)"] as Record<string, DailyData>
-    );
+//     // Get the entries of the Time Series and map to include the date and close price
+//     firstData.value = Object.entries(
+//       firstRawData.value["Time Series (Daily)"] as Record<string, DailyData>
+//     )
+//       .map(([date, day]) => ({
+//         date, // The date of the stock data
+//         close: Math.round(Number(day["4. close"])), // Rounded close price
+//       }))
+//       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+//     console.log(firstData.value.slice(0, 10)); // This should log an array of numbers
+//   } catch (error) {
+//     console.error("Error fetching stock data:", error);
+//   }
+// };
 
-    firstData.value = timeSeries.map(([_, day], index) => ({
-      index, // The index of the day
-      close: Math.round(Number(day["4. close"])),
-    }));
-    console.log(firstData.value.slice(0, 10)); // This should log an array of numbers
-  } catch (error) {
-    console.error("Error fetching stock data:", error);
-  }
+const fetchStockData = () => {
+  firstData.value = Object.entries(testdata["Time Series (Daily)"])
+    .map(([date, day]) => ({
+      date, // The date of the stock data
+      close: Math.round(Number(day["4. close"])), // Rounded close price
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 };
 
 onMounted(() => {
   fetchStockData();
 });
 
-// const config2 = {
-//   type: "line",
-//   data: {
-//     datasets: [
-//       {
-//         borderColor: "#417ABE",
-//         borderWidth: 1,
-//         radius: 0,
-//         data: firstData.value,
-//       },
-//       {
-//         borderColor: "#00B8CD",
-//         borderWidth: 1,
-//         radius: 0,
-//         data: firstData.value,
-//       },
-//     ],
-//   },
-// };
-
 const chartData2 = computed(() => {
-  const labels: number[] = firstData.value
-    ? firstData.value.map((item) => item.index)
+  const labels: string[] = firstData.value
+    ? firstData.value.map((item) => item.date)
     : [];
   const data: number[] = firstData.value
     ? firstData.value.map((item) => item.close)
@@ -86,61 +77,34 @@ const chartData2 = computed(() => {
     labels,
     datasets: [
       {
-        label: "value(yen)",
+        label: "TSLA",
         data,
         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        backgroundColor: "#417ABE",
+        fill: false,
+        backgroundColor: "#FFFFFF ",
+        borderWidth: 1,
+        borderColor: "#cf352e",
+        // backgroundColor: "#cf352e",
+        tension: 0.3,
+        // radius: 1,
+        pointStyle: false,
       },
-    ],
-  };
-});
-
-// const handleEnter = async (event: KeyboardEvent) => {
-//   if (event.key === "Enter") {
-//     await fetchSearchResults(1);
-//   }
-// };
-
-const chartData = computed(() => {
-  const labels: string[] = assetList.value.map((item) => item.name);
-  const data: number[] = assetList.value.map((item) => item.value);
-
-  return {
-    labels,
-    datasets: [
       {
-        label: "value(yen)",
+        label: "TSLA",
         data,
-        backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+        fill: false,
+        backgroundColor: "#FFFFFF ",
+        borderWidth: 2,
+        borderColor: "#417ABE",
+        // backgroundColor: "#cf352e",
+        tension: 0.3,
+        // radius: 1,
+        pointStyle: false,
       },
     ],
   };
 });
-
-interface ChartOptionsWithRadius extends ChartOptions {
-  radius?: number;
-}
-
-const chartOption: ChartOptionsWithRadius = {
-  // responsive: true,
-  maintainAspectRatio: false,
-  radius: 120,
-  plugins: {
-    legend: {
-      position: "right",
-      labels: {
-        boxWidth: 15,
-        font: {
-          size: 14,
-        },
-      },
-    },
-
-    tooltip: {
-      enabled: true,
-    },
-  },
-};
 
 const chartOption2: ChartOptions = {
   plugins: {
@@ -153,23 +117,23 @@ const chartOption2: ChartOptions = {
     },
   },
 };
+
+// const handleEnter = async (event: KeyboardEvent) => {
+//   if (event.key === "Enter") {
+//     await fetchSearchResults(1);
+//   }
+// };
 </script>
 
 <template>
   <div class="py-2 mx-4 h-100vh bg-gray-300 w-100vw">
     <!-- <pre>{{ firstData }}</pre> -->
-    <PartsChart
-      type="doughnut"
-      :data="chartData"
-      :options="chartOption"
-      class="w-100 m-auto h-100"
-    />
 
     <PartsChart
       type="line"
       :data="chartData2"
       :options="chartOption2"
-      class="w-200 m-auto h-100"
+      class="w-200 m-auto h-100 border-2 border-amber"
     />
 
     <!-- <div class="flex gap-4 my-2">
