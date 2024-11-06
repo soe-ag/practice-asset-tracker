@@ -2,7 +2,8 @@
 import type { ChartOptions } from "chart.js";
 // import { convertToSimpleType } from "~/utils/utils";
 import { useRuntimeConfig } from "#app";
-import testdata from "~/utils/testdata.json";
+import testdata1 from "~/utils/testdata1.json";
+import testdata2 from "~/utils/testdata2.json";
 
 const config = useRuntimeConfig();
 // const client = useSupabaseClient();
@@ -22,8 +23,14 @@ const config = useRuntimeConfig();
 //   } else return [];
 // });
 
-const firstRawData = ref();
-const firstData = ref<
+// const firstRawData = ref();
+const dataA = ref<
+  {
+    date: string;
+    close: number;
+  }[]
+>();
+const dataB = ref<
   {
     date: string;
     close: number;
@@ -38,7 +45,7 @@ const firstData = ref<
 //     firstRawData.value = await $fetch(url);
 
 //     // Get the entries of the Time Series and map to include the date and close price
-//     firstData.value = Object.entries(
+//     dataA.value = Object.entries(
 //       firstRawData.value["Time Series (Daily)"] as Record<string, DailyData>
 //     )
 //       .map(([date, day]) => ({
@@ -46,14 +53,30 @@ const firstData = ref<
 //         close: Math.round(Number(day["4. close"])), // Rounded close price
 //       }))
 //       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-//     console.log(firstData.value.slice(0, 10)); // This should log an array of numbers
+//     console.log(dataA.value.slice(0, 10)); // This should log an array of numbers
 //   } catch (error) {
 //     console.error("Error fetching stock data:", error);
 //   }
 // };
 
+const sampleFetch = async (symbol: string) => {
+  const apiKey = config.public.stockApiKey2;
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
+
+  const data = await $fetch(url);
+
+  console.log(data);
+};
+
 const fetchStockData = () => {
-  firstData.value = Object.entries(testdata["Time Series (Daily)"])
+  dataA.value = Object.entries(testdata1["Time Series (Daily)"])
+    .map(([date, day]) => ({
+      date, // The date of the stock data
+      close: Math.round(Number(day["4. close"])), // Rounded close price
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  dataB.value = Object.entries(testdata2["Time Series (Daily)"])
     .map(([date, day]) => ({
       date, // The date of the stock data
       close: Math.round(Number(day["4. close"])), // Rounded close price
@@ -63,22 +86,27 @@ const fetchStockData = () => {
 
 onMounted(() => {
   fetchStockData();
+  sampleFetch("TSLA");
 });
 
 const chartData2 = computed(() => {
-  const labels: string[] = firstData.value
-    ? firstData.value.map((item) => item.date)
+  const labels: string[] = dataA.value
+    ? dataA.value.map((item) => item.date)
     : [];
-  const data: number[] = firstData.value
-    ? firstData.value.map((item) => item.close)
+  const chartDataA: number[] = dataA.value
+    ? dataA.value.map((item) => item.close)
+    : [];
+
+  const chartDataB: number[] = dataB.value
+    ? dataB.value.map((item) => item.close)
     : [];
 
   return {
     labels,
     datasets: [
       {
-        label: "TSLA",
-        data,
+        label: "IBM",
+        data: chartDataA,
         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
         fill: false,
         backgroundColor: "#FFFFFF ",
@@ -91,11 +119,11 @@ const chartData2 = computed(() => {
       },
       {
         label: "TSLA",
-        data,
+        data: chartDataB,
         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
         fill: false,
         backgroundColor: "#FFFFFF ",
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: "#417ABE",
         // backgroundColor: "#cf352e",
         tension: 0.3,
@@ -127,7 +155,7 @@ const chartOption2: ChartOptions = {
 
 <template>
   <div class="py-2 mx-4 h-100vh bg-gray-300 w-100vw">
-    <!-- <pre>{{ firstData }}</pre> -->
+    <!-- <pre>{{ dataA }}</pre> -->
 
     <PartsChart
       type="line"
