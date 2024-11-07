@@ -4,6 +4,8 @@ import type { ChartOptions } from "chart.js";
 import { useRuntimeConfig } from "#app";
 import testdata1 from "~/utils/testdata1.json";
 import testdata2 from "~/utils/testdata2.json";
+import testdata3 from "~/utils/testdata3.json";
+import type { StockData } from "~/utils/type";
 
 const config = useRuntimeConfig();
 // const client = useSupabaseClient();
@@ -24,18 +26,10 @@ const config = useRuntimeConfig();
 // });
 
 // const firstRawData = ref();
-const dataA = ref<
-  {
-    date: string;
-    close: number;
-  }[]
->();
-const dataB = ref<
-  {
-    date: string;
-    close: number;
-  }[]
->();
+const dataA = ref<StockData[]>();
+const dataB = ref<StockData[]>();
+const dataC = ref<StockData[]>();
+
 // const fetchStockData = async (symbol: string) => {
 //   // const symbol = "TSLA";
 //   const apiKey = config.public.stockApiKey;
@@ -44,13 +38,13 @@ const dataB = ref<
 //   try {
 //     firstRawData.value = await $fetch(url);
 
-//     // Get the entries of the Time Series and map to include the date and close price
+//     // Get the entries of the Time Series and map to include the date and price price
 //     dataA.value = Object.entries(
 //       firstRawData.value["Time Series (Daily)"] as Record<string, DailyData>
 //     )
 //       .map(([date, day]) => ({
 //         date, // The date of the stock data
-//         close: Math.round(Number(day["4. close"])), // Rounded close price
+//         price: Math.round(Number(day["4. price"])), // Rounded price price
 //       }))
 //       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 //     console.log(dataA.value.slice(0, 10)); // This should log an array of numbers
@@ -69,24 +63,14 @@ const sampleFetch = async (symbol: string) => {
 };
 
 const fetchStockData = () => {
-  dataA.value = Object.entries(testdata1["Time Series (Daily)"])
-    .map(([date, day]) => ({
-      date, // The date of the stock data
-      close: Math.round(Number(day["4. close"])), // Rounded close price
-    }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  dataB.value = Object.entries(testdata2["Time Series (Daily)"])
-    .map(([date, day]) => ({
-      date, // The date of the stock data
-      close: Math.round(Number(day["4. close"])), // Rounded close price
-    }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  dataA.value = getDataFromJson(testdata1);
+  dataB.value = getDataFromJson(testdata2);
+  dataC.value = getDataFromJson(testdata3);
 };
 
 onMounted(() => {
   fetchStockData();
-  sampleFetch("TSLA");
+  // sampleFetch("GOOG");
 });
 
 const chartData2 = computed(() => {
@@ -94,11 +78,15 @@ const chartData2 = computed(() => {
     ? dataA.value.map((item) => item.date)
     : [];
   const chartDataA: number[] = dataA.value
-    ? dataA.value.map((item) => item.close)
+    ? dataA.value.map((item) => item.price)
     : [];
 
   const chartDataB: number[] = dataB.value
-    ? dataB.value.map((item) => item.close)
+    ? dataB.value.map((item) => item.price)
+    : [];
+
+  const chartDataC: number[] = dataC.value
+    ? dataC.value.map((item) => item.price)
     : [];
 
   return {
@@ -125,6 +113,19 @@ const chartData2 = computed(() => {
         backgroundColor: "#FFFFFF ",
         borderWidth: 1,
         borderColor: "#417ABE",
+        // backgroundColor: "#cf352e",
+        tension: 0.3,
+        // radius: 1,
+        pointStyle: false,
+      },
+      {
+        label: "GOOG",
+        data: chartDataC,
+        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+        fill: false,
+        backgroundColor: "#FFFFFF ",
+        borderWidth: 1,
+        borderColor: "#00B8CD",
         // backgroundColor: "#cf352e",
         tension: 0.3,
         // radius: 1,

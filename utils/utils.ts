@@ -35,3 +35,12 @@ export const convertToSimpleType = (item: RawAsset): Asset => {
 const convertDollarToYen = (dollar: number, rate: number): number => {
   return dollar * rate;
 };
+
+export const getDataFromJson = (jsonData: RawStockData) => {
+  return Object.entries(jsonData["Time Series (Daily)"])
+    .map(([date, day]) => ({
+      date, // The date of the stock data
+      price: Math.round(Number(day["4. close"])), // Rounded close price
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+};
