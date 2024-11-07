@@ -30,6 +30,15 @@ const dataA = ref<StockData[]>();
 const dataB = ref<StockData[]>();
 const dataC = ref<StockData[]>();
 
+const stockA = ref<DropDownType | null>();
+const stockB = ref<DropDownType | null>();
+const stockC = ref<DropDownType | null>();
+const stockList = ref([
+  { name: "Tesla", code: "TSLA" },
+  { name: "IBM", code: "IBM" },
+  { name: "Google", code: "GOOG" },
+]);
+
 // const fetchStockData = async (symbol: string) => {
 //   // const symbol = "TSLA";
 //   const apiKey = config.public.stockApiKey;
@@ -69,24 +78,99 @@ const fetchStockData = () => {
 };
 
 onMounted(() => {
-  fetchStockData();
+  // fetchStockData();
   // sampleFetch("GOOG");
 });
+
+watch(
+  () => stockA.value,
+  (newValue) => {
+    if (newValue) {
+      switch (newValue.code) {
+        case "IBM":
+          dataA.value = getDataFromJson(testdata1);
+          break;
+        case "TSLA":
+          dataA.value = getDataFromJson(testdata2);
+          break;
+        case "GOOG":
+          dataA.value = getDataFromJson(testdata3);
+          break;
+      }
+    }
+  }
+);
+
+watch(
+  () => stockB.value,
+  (newValue) => {
+    if (newValue) {
+      switch (newValue.code) {
+        case "IBM":
+          dataB.value = getDataFromJson(testdata1);
+          break;
+        case "TSLA":
+          dataB.value = getDataFromJson(testdata2);
+          break;
+        case "GOOG":
+          dataB.value = getDataFromJson(testdata3);
+          break;
+      }
+    }
+  }
+);
+
+watch(
+  () => stockC.value,
+  (newValue) => {
+    if (newValue) {
+      switch (newValue.code) {
+        case "IBM":
+          dataC.value = getDataFromJson(testdata1);
+          break;
+        case "TSLA":
+          dataC.value = getDataFromJson(testdata2);
+          break;
+        case "GOOG":
+          dataC.value = getDataFromJson(testdata3);
+          break;
+      }
+    }
+  }
+);
+
+// watch(
+//   [() => stockA.value, () => stockB.value, () => stockC.value],
+//   ([newA, newb, newC]) => {
+//     stockList.value = stockList.value.filter(
+//       (item) =>
+//         item.code !== newA.code &&
+//         item.code !== newb.code &&
+//         item.code !== newC.code
+//     );
+//   }
+// );
 
 const chartData2 = computed(() => {
   const labels: string[] = dataA.value
     ? dataA.value.map((item) => item.date)
     : [];
-  const chartDataA: number[] = dataA.value
-    ? dataA.value.map((item) => item.price)
+  const chartDataA: number[] = stockA.value
+    ? dataA.value
+      ? dataA.value.map((item) => item.price)
+      : []
     : [];
 
-  const chartDataB: number[] = dataB.value
-    ? dataB.value.map((item) => item.price)
+  const chartDataB: number[] = stockB.value
+    ? dataB.value
+      ? dataB.value.map((item) => item.price)
+      : []
     : [];
 
-  const chartDataC: number[] = dataC.value
-    ? dataC.value.map((item) => item.price)
+  const chartDataC: number[] = stockC.value
+    ? dataC.value
+      ? dataC.value.map((item) => item.price)
+      : []
     : [];
 
   return {
@@ -99,7 +183,7 @@ const chartData2 = computed(() => {
         fill: false,
         backgroundColor: "#FFFFFF ",
         borderWidth: 1,
-        borderColor: "#cf352e",
+        borderColor: "#417ABE",
         // backgroundColor: "#cf352e",
         tension: 0.3,
         // radius: 1,
@@ -112,7 +196,7 @@ const chartData2 = computed(() => {
         fill: false,
         backgroundColor: "#FFFFFF ",
         borderWidth: 1,
-        borderColor: "#417ABE",
+        borderColor: "#cf352e",
         // backgroundColor: "#cf352e",
         tension: 0.3,
         // radius: 1,
@@ -155,7 +239,53 @@ const chartOption2: ChartOptions = {
 </script>
 
 <template>
-  <div class="py-2 mx-4 h-100vh bg-gray-300 w-100vw">
+  <div class="py-2 h-100vh bg-gray-300 w-90vw m-auto">
+    <div class="text-black text-sm w-100 m-2">
+      <!--  eslint-disable-next-line vue/html-self-closing -->
+      Stock A is {{ stockA }} <br />Stock B is {{ stockB }} <br />Stock C is{{
+        stockC
+      }}
+      <!-- <pre> stockList is {{ stockList }}</pre> -->
+    </div>
+    <div class="gap-2 flex justify-center my-6 w-50vw m-auto">
+      <Select
+        v-model="stockA"
+        :options="stockList"
+        option-label="name"
+        placeholder="Select a Stock"
+        checkmark
+        size="small"
+        show-clear
+        class="w-38 text-xs"
+        :pt="{
+          optionLabel: { class: 'text-xs font-sans	' },
+        }"
+      />
+
+      <Select
+        v-model="stockB"
+        :options="stockList"
+        option-label="name"
+        placeholder="Select a Stock"
+        checkmark
+        size="small"
+        show-clear
+        class="w-38 text-xs"
+        :pt="{ optionLabel: { class: 'text-xs font-sans	' } }"
+      />
+
+      <Select
+        v-model="stockC"
+        :options="stockList"
+        option-label="name"
+        placeholder="Select a Stock"
+        checkmark
+        size="small"
+        show-clear
+        class="w-38 text-xs"
+        :pt="{ optionLabel: { class: 'text-xs font-sans	' } }"
+      />
+    </div>
     <!-- <pre>{{ dataA }}</pre> -->
 
     <PartsChart

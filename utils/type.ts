@@ -44,3 +44,8 @@ export type StockData = {
   date: string;
   price: number;
 };
+
+export type DropDownType = {
+  name: string;
+  code: string;
+};
