@@ -36,7 +36,7 @@ onMounted(() => {
     ],
     showSymbolLogo: true,
     isTransparent: false,
-    displayMode: "adaptive",
+    displayMode: "regular",
     colorTheme: "dark",
     locale: "en",
   });

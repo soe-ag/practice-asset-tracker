@@ -146,6 +146,36 @@ onMounted(() => {
     }
   });
 
+  function calculateMovingAverageSeriesData(candleData, maLength) {
+    const maData = [];
+
+    for (let i = 0; i < candleData.length; i++) {
+      if (i < maLength) {
+        // Provide whitespace data points until the MA can be calculated
+        maData.push({ time: candleData[i].time });
+      } else {
+        // Calculate the moving average, slow but simple way
+        let sum = 0;
+        for (let j = 0; j < maLength; j++) {
+          sum += candleData[i - j].value;
+        }
+        const maValue = sum / maLength;
+        maData.push({ time: candleData[i].time, value: maValue });
+      }
+    }
+
+    return maData;
+  }
+
+  const maData = calculateMovingAverageSeriesData(getDataFromJson(dataTwo), 20);
+  console.log(maData);
+
+  const maSeries = chart.addLineSeries({
+    color: "rgb(225, 87, 90)",
+    lineWidth: 1,
+  });
+  maSeries.setData(maData);
+
   chart.timeScale().fitContent();
 
   if (autosize) {
@@ -226,11 +256,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="chartContainer" class="lw-chart" />
+  <div ref="chartContainer" class="h-80" />
 </template>
-
-<style scoped>
-.lw-chart {
-  height: 100%;
-}
-</style>

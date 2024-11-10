@@ -172,11 +172,5 @@ watch(
 </script>
 
 <template>
-  <div ref="chartContainer" class="lw-chart" />
+  <div ref="chartContainer" class="h-80" />
 </template>
-
-<style scoped>
-.lw-chart {
-  height: 100%;
-}
-</style>
