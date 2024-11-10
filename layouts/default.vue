@@ -33,7 +33,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <div class="bg-cover bg-fixed bg-blend-overlay bg-center bg-#0e1111">
+  <div class="bg-cover bg-fixed bg-blend-overlay bg-center bg-gray-600">
     <nav class="grid grid-cols-5 items-center p-1 bg-#0e1111">
       <!-- Left Menu Items -->
       <div class="col-span-4 flex gap-2">
@@ -68,5 +68,9 @@ const route = useRoute();
       </div>
     </nav>
     <slot />
+    <footer class="text-xs text-end my-2">
+      TradingView Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
+      https://www.tradingview.com/
+    </footer>
   </div>
 </template>

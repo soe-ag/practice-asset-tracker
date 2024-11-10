@@ -39,8 +39,8 @@ const convertDollarToYen = (dollar: number, rate: number): number => {
 export const getDataFromJson = (jsonData: RawStockData) => {
   return Object.entries(jsonData["Time Series (Daily)"])
     .map(([date, day]) => ({
-      date, // The date of the stock data
-      price: Math.round(Number(day["4. close"])), // Rounded close price
+      time: date, // The date of the stock data
+      value: Math.round(Number(day["4. close"])), // Rounded close price
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 };
