@@ -20,8 +20,8 @@
         <TvChart class="h-80" />
       </div>
     </div>
-    <!-- <div class="b-1 b-solid b-amber">
+    <div class="my-1">
       <WidgetOne />
-    </div> -->
+    </div>
   </div>
 </template>
