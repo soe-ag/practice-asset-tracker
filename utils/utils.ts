@@ -44,3 +44,12 @@ export const getDataFromJson = (jsonData: RawStockData) => {
     }))
     .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 };
+
+export const getVolumeDataFromJson = (jsonData: RawStockData) => {
+  return Object.entries(jsonData["Time Series (Daily)"])
+    .map(([date, day]) => ({
+      time: date, // The date of the stock data
+      value: Math.round(Number(day["5. volume"])), // Rounded close price
+    }))
+    .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+};

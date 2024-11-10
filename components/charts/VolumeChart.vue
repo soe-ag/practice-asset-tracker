@@ -46,6 +46,9 @@ const resizeHandler = () => {
   chart.resize(dimensions.width, dimensions.height);
 };
 
+// const mainData = getDataFromJson(dataTwo);
+const volumeData = getVolumeDataFromJson(dataTwo);
+
 // Creates the chart series and sets the data.
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
@@ -65,6 +68,27 @@ onMounted(() => {
   //   if (timeScaleOptions) {
   //     chart.timeScale().applyOptions(timeScaleOptions);
   //   }
+
+  const volumeSeries = chart.addHistogramSeries({
+    color: "#079a80",
+    priceFormat: {
+      type: "volume",
+    },
+    priceScaleId: "", // set as an overlay by setting a blank priceScaleId
+    // set the positioning of the volume series
+    scaleMargins: {
+      top: 0.7, // highest point of the series will be 70% away from the top
+      bottom: 0,
+    },
+  });
+  volumeSeries.priceScale().applyOptions({
+    scaleMargins: {
+      top: 0.7, // highest point of the series will be 70% away from the top
+      bottom: 0,
+    },
+  });
+
+  volumeSeries.setData(volumeData);
 
   chart.timeScale().fitContent();
 
