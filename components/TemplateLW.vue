@@ -1,25 +1,18 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import dataOne from "~/utils/testdata1.json";
 import dataTwo from "~/utils/testdata2.json";
-import dataThree from "~/utils/testdata3.json";
 
-// // Function to get the correct series constructor name for current series type.
-// function getChartSeriesConstructorName(type) {
-//   return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
-// }
+// Function to get the correct series constructor name for current series type.
+function getChartSeriesConstructorName(type) {
+  return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
+}
 
-// Lightweight Chart instances are stored as normal JS variables
-// If you need to use a ref then it is recommended that you use `shallowRef` instead
 let series;
 let chart;
-const autosize = true;
-
-const chartContainer = ref();
 const chartOptions = {
   layout: {
-    textColor: "#9ca3af",
+    textColor: "white",
     background: { type: "solid", color: "black" },
   },
   grid: {
@@ -31,6 +24,9 @@ const chartOptions = {
     },
   },
 };
+const chartType = "line";
+const autosize = true;
+const chartContainer = ref();
 
 const fitContent = () => {
   if (!chart) return;
@@ -51,27 +47,16 @@ const resizeHandler = () => {
 };
 
 // Creates the chart series and sets the data.
-// const addSeriesAndData = (props) => {
-//   const seriesConstructor = getChartSeriesConstructorName("line");
-//   series = chart[seriesConstructor](props.seriesOptions);
-//   series.setData(props.data);
-// };
+const addSeriesAndData = () => {
+  const seriesConstructor = getChartSeriesConstructorName(chartType);
+  series = chart[seriesConstructor]();
+  series.setData(getDataFromJson(dataTwo));
+};
 
 onMounted(() => {
   // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
-
-  const lineSeriesOne = chart.addLineSeries({ color: "#2962FF" });
-  const lineSeriesTwo = chart.addLineSeries({ color: "rgb(225, 87, 90)" });
-  const lineSeriesThree = chart.addLineSeries({ color: "rgb(242, 142, 44)" });
-
-  const lineSeriesOneData = getDataFromJson(dataOne);
-  const lineSeriesTwoData = getDataFromJson(dataTwo);
-  const lineSeriesThreeData = getDataFromJson(dataThree);
-
-  lineSeriesOne.setData(lineSeriesOneData);
-  lineSeriesTwo.setData(lineSeriesTwoData);
-  lineSeriesThree.setData(lineSeriesThreeData);
+  addSeriesAndData();
 
   //   if (priceScaleOptions) {
   //     chart.priceScale().applyOptions(priceScaleOptions);
@@ -98,35 +83,24 @@ onUnmounted(() => {
   }
 });
 
-/*
- * Watch for changes to any of the component properties.
-
- * If an options property is changed then we will apply those options
- * on top of any existing options previously set (since we are using the
- * `applyOptions` method).
- * 
- * If there is a change to the chart type, then the existing series is removed
- * and the new series is created, and assigned the data.
- * 
- */
-watch(
-  () => autosize,
-  (enabled) => {
-    if (!enabled) {
-      window.removeEventListener("resize", resizeHandler);
-      return;
-    }
-    window.addEventListener("resize", resizeHandler);
-  }
-);
+// watch(
+//   () => autosize,
+//   (enabled) => {
+//     if (!enabled) {
+//       window.removeEventListener("resize", resizeHandler);
+//       return;
+//     }
+//     window.addEventListener("resize", resizeHandler);
+//   }
+// );
 
 // watch(
-//   () => type,
+//   () => chartType,
 //   () => {
 //     if (series && chart) {
 //       chart.removeSeries(series);
 //     }
-//     addSeriesAndData(props);
+//     addSeriesAndData();
 //   }
 // );
 
@@ -138,13 +112,13 @@ watch(
 //   }
 // );
 
-watch(
-  () => chartOptions,
-  (newOptions) => {
-    if (!chart) return;
-    chart.applyOptions(newOptions);
-  }
-);
+// watch(
+//   () => chartOptions,
+//   (newOptions) => {
+//     if (!chart) return;
+//     chart.applyOptions(newOptions);
+//   }
+// );
 
 // watch(
 //   () => seriesOptions,

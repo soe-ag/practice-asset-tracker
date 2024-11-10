@@ -34,9 +34,9 @@ const route = useRoute();
 
 <template>
   <div class="bg-cover bg-fixed bg-blend-overlay bg-center bg-#000">
-    <nav class="grid grid-cols-5 items-center p-1">
+    <nav class="flex gap-2 items-center p-1">
       <!-- Left Menu Items -->
-      <div class="col-span-4 flex gap-2">
+      <div class="flex gap-2">
         <div v-for="menu in menuItems.slice(0, 4)" :key="menu.label">
           <NuxtLink
             :to="menu.route"
@@ -53,7 +53,7 @@ const route = useRoute();
       </div>
 
       <!-- Right Menu Item -->
-      <div class="col-span-1 flex justify-end">
+      <!-- <div class="col-span-1 flex justify-end">
         <NuxtLink
           :to="menuItems[4].route"
           :class="{
@@ -66,7 +66,7 @@ const route = useRoute();
           <div :class="menuItems[4].icon" class="text-xs" />
           <div class="text-lg">{{ menuItems[4].label }}</div>
         </NuxtLink>
-      </div>
+      </div> -->
     </nav>
     <slot />
     <footer class="text-xs text-end my-2 text-gray-400">
