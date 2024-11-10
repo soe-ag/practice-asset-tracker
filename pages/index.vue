@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const chartType = ref("line");
+const chartType = ref("area");
 
 const handleChangeChartType = (type: string) => {
   chartType.value = type;
