@@ -34,7 +34,20 @@ function generateSampleData(ohlc) {
   return res;
 }
 
-const chartOptions = ref({});
+const chartOptions = {
+  layout: {
+    textColor: "#9ca3af",
+    background: { type: "solid", color: "black" },
+  },
+  grid: {
+    vertLines: {
+      visible: false,
+    },
+    horzLines: {
+      visible: false,
+    },
+  },
+};
 // const data = ref(generateSampleData(false));
 // console.log(data.value);
 

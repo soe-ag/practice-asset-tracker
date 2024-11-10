@@ -5,8 +5,6 @@ import dataOne from "~/utils/testdata1.json";
 import dataTwo from "~/utils/testdata2.json";
 import dataThree from "~/utils/testdata3.json";
 
-const chartOptions = ref({});
-
 // // Function to get the correct series constructor name for current series type.
 // function getChartSeriesConstructorName(type) {
 //   return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
@@ -19,6 +17,20 @@ let chart;
 const autosize = true;
 
 const chartContainer = ref();
+const chartOptions = {
+  layout: {
+    textColor: "#9ca3af",
+    background: { type: "solid", color: "black" },
+  },
+  grid: {
+    vertLines: {
+      visible: false,
+    },
+    horzLines: {
+      visible: false,
+    },
+  },
+};
 
 const fitContent = () => {
   if (!chart) return;

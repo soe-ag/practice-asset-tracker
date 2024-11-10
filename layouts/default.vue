@@ -33,8 +33,8 @@ const route = useRoute();
 </script>
 
 <template>
-  <div class="bg-cover bg-fixed bg-blend-overlay bg-center bg-gray-600">
-    <nav class="grid grid-cols-5 items-center p-1 bg-#0e1111">
+  <div class="bg-cover bg-fixed bg-blend-overlay bg-center bg-#000">
+    <nav class="grid grid-cols-5 items-center p-1">
       <!-- Left Menu Items -->
       <div class="col-span-4 flex gap-2">
         <div v-for="menu in menuItems.slice(0, 4)" :key="menu.label">
@@ -42,7 +42,7 @@ const route = useRoute();
             :to="menu.route"
             :class="{
               'text-blue-4 ': route.path === menu.route,
-              'text-white hover:text-blue-4': route.path !== menu.route,
+              'text-gray-400 hover:text-blue-4': route.path !== menu.route,
             }"
             class="no-underline rounded-1 m-1 w-fit px-2 h-8 flex justify-center items-center gap-1"
           >
@@ -58,7 +58,8 @@ const route = useRoute();
           :to="menuItems[4].route"
           :class="{
             'text-green-4 ': route.path === menuItems[4].route,
-            'text-white hover:text-green-4': route.path !== menuItems[4].route,
+            'text-gray-400 hover:text-green-4':
+              route.path !== menuItems[4].route,
           }"
           class="no-underline rounded-1 m-1 w-fit px-2 h-8 flex justify-center items-center gap-1"
         >
@@ -68,7 +69,7 @@ const route = useRoute();
       </div>
     </nav>
     <slot />
-    <footer class="text-xs text-end my-2">
+    <footer class="text-xs text-end my-2 text-gray-400">
       TradingView Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
       https://www.tradingview.com/
     </footer>
