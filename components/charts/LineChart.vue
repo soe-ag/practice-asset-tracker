@@ -1,12 +1,16 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import dataTwo from "~/utils/testdata2.json";
+import sampleJsonData from "~/utils/teslaAll.json";
 
 const props = defineProps({
   quote: {
     type: String,
     default: "Quote",
+  },
+  apiData: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -72,7 +76,9 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
-  series.setData(getDataFromJson(dataTwo));
+  series.setData(
+    props.apiData.length > 0 ? props.apiData : getDataFromJson(sampleJsonData)
+  );
   series.priceScale().applyOptions({
     scaleMargins: {
       top: 0.3, // leave some space for the legend
@@ -84,8 +90,12 @@ const addSeriesAndData = () => {
 onMounted(() => {
   // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
+  // if (props.apiData.length > 0) {
   addSeriesAndData();
+  // }
 
+  console.log("within onMounted", props.apiData.length);
+  console.log("within onMounted", getDataFromJson(sampleJsonData)[0]);
   //   if (priceScaleOptions) {
   //     chart.priceScale().applyOptions(priceScaleOptions);
   //   }
@@ -167,8 +177,11 @@ onMounted(() => {
     return maData;
   }
 
-  const maData = calculateMovingAverageSeriesData(getDataFromJson(dataTwo), 20);
-  console.log(maData);
+  const maData = calculateMovingAverageSeriesData(
+    props.apiData.length > 0 ? props.apiData : getDataFromJson(sampleJsonData),
+    50
+  );
+  // console.log(maData);
 
   const maSeries = chart.addLineSeries({
     color: "rgb(225, 87, 90)",
@@ -214,13 +227,24 @@ onUnmounted(() => {
 //   }
 // );
 
-// watch(
-//   () => data,
-//   (newData) => {
-//     if (!series) return;
-//     series.setData(newData);
-//   }
-// );
+watch(
+  () => props.apiData,
+  (newData) => {
+    console.log("newData is coming", newData[0].value);
+    if (!series) return;
+    series.setData(newData);
+
+    // todo: not changing
+    const maData = calculateMovingAverageSeriesData(newData, 50);
+    // console.log(maData);
+
+    const maSeries = chart.addLineSeries({
+      color: "rgb(225, 87, 90)",
+      lineWidth: 1,
+    });
+    maSeries.setData(maData);
+  }
+);
 
 // watch(
 //   () => chartOptions,
@@ -256,5 +280,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="chartContainer" class="h-80" />
+  <div>
+    <div ref="chartContainer" class="h-80" />
+    {{ apiData }}
+    {{ props.apiData.length }}
+  </div>
 </template>

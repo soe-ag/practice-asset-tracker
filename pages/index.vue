@@ -3,20 +3,86 @@ import CompareChart from "~/components/charts/CompareChart.vue";
 import LineChart from "~/components/charts/LineChart.vue";
 import MultipleTypeChart from "~/components/charts/MultipleTypeChart.vue";
 import VolumeChart from "~/components/charts/VolumeChart.vue";
+import type { RefinedData } from "~/utils/type";
+import sampleData from "~/utils/testdata2.json";
 
 const chartType = ref("area");
 
 const handleChangeChartType = (type: string) => {
   chartType.value = type;
 };
+
+const stockList = ref([
+  { name: "Tesla", code: "TSLA" },
+  { name: "Google", code: "GOOG" },
+  { name: "Apple", code: "AAPL" },
+  { name: "Amazon", code: "AMZN" },
+  { name: "Microsoft", code: "MSFT" },
+  { name: "Nvidia", code: "NVDA" },
+  { name: "AMD", code: "AMD" },
+  { name: "Meta", code: "META" },
+]);
+
+const selectedStock = ref<DropDownType | null>(stockList.value[0]);
+
+const config = useRuntimeConfig();
+const rawData = ref<RawStockData>();
+const finalData = ref<RefinedData[]>([]);
+
+const fetchStockData = async (symbol: string) => {
+  // const symbol = "TSLA";
+  const apiKey = config.public.stockApiKey;
+  const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${apiKey}`;
+
+  try {
+    rawData.value = await $fetch(url);
+
+    // change function name later
+    finalData.value = getDataFromJson(
+      rawData.value ? rawData.value : sampleData
+    );
+    console.log("api return data is ", finalData.value);
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+  }
+};
+
+// onMounted(() => {
+//   fetchStockData("TSLA");
+// });
+
+// watch(selectedStock, () => {
+//   if (selectedStock.value === null) return;
+//   fetchStockData(selectedStock.value.code);
+// });
 </script>
 
 <template>
   <div class="">
-    <div class="grid grid-cols-2 gap-1 mx-2 px-2 text-gray-400">
+    {{ selectedStock?.code }}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1 mx-2 px-2 text-gray-400">
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
-        <h4 class="mb-4">Line Chart with MA-20</h4>
-        <LineChart class="h-70 relative" quote="Tesla" />
+        <div class="flex gap-2 items-center">
+          <h4 class="">Line Chart with MA-50</h4>
+          <Select
+            v-model="selectedStock"
+            :options="stockList"
+            option-label="name"
+            placeholder="Select a Stock"
+            size="small"
+            show-clear
+            class="w-37 text-xs"
+            :pt="{
+              optionLabel: { class: 'text-xs font-sans	' },
+            }"
+          />
+        </div>
+
+        <LineChart
+          class="h-70 relative"
+          :quote="selectedStock?.name"
+          :api-data="finalData"
+        />
       </div>
 
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">

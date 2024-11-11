@@ -40,9 +40,9 @@ export type RawStockData = {
   };
 };
 
-export type StockData = {
-  date: string;
-  price: number;
+export type RefinedData = {
+  time: string;
+  value: number;
 };
 
 export type DropDownType = {

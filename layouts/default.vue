@@ -6,26 +6,26 @@ const menuItems = ref([
     route: "/",
   },
 
-  {
-    label: "Save",
-    icon: "i-material-symbols-save-rounded",
-    route: "/save",
-  },
-  {
-    label: "Favorite",
-    icon: "i-material-symbols-favorite",
-    route: "/favorite",
-  },
+  // {
+  //   label: "Save",
+  //   icon: "i-material-symbols-save-rounded",
+  //   route: "/save",
+  // },
+  // {
+  //   label: "Favorite",
+  //   icon: "i-material-symbols-favorite",
+  //   route: "/favorite",
+  // },
   {
     label: "Others",
-    icon: "i-material-symbols-movie-filter",
+    icon: "",
     route: "/others",
   },
-  {
-    label: "",
-    icon: "i-logos-nuxt-icon",
-    route: "/sample",
-  },
+  // {
+  //   label: "",
+  //   icon: "i-logos-nuxt-icon",
+  //   route: "/sample",
+  // },
 ]);
 
 const route = useRoute();
