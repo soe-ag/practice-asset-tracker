@@ -58,9 +58,9 @@ const fetchStockData = async (symbol: string) => {
 </script>
 
 <template>
-  <div class="">
-    {{ selectedStock?.code }}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-1 mx-2 px-2 text-gray-400">
+  <div class="bg-#000">
+    <!-- {{ selectedStock?.code }} -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 p-6 text-gray-400">
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <div class="flex gap-2 items-center">
           <h4 class="">Line Chart with MA-50</h4>
@@ -134,11 +134,16 @@ const fetchStockData = async (symbol: string) => {
 
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-4">Volume Chart</h4>
-        <VolumeChart class="h-70" />
+        <VolumeChart class="h-70" :api-data="finalData" />
       </div>
     </div>
     <div class="my-1">
       <WidgetOne />
     </div>
+
+    <footer class="text-xs text-end my-2 text-gray-400">
+      TradingView Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
+      https://www.tradingview.com/
+    </footer>
   </div>
 </template>

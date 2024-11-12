@@ -69,9 +69,5 @@ const route = useRoute();
       </div> -->
     </nav>
     <slot />
-    <footer class="text-xs text-end my-2 text-gray-400">
-      TradingView Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
-      https://www.tradingview.com/
-    </footer>
   </div>
 </template>

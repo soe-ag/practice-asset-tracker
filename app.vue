@@ -2,8 +2,8 @@
 
 <template>
   <div class="font-sans bg-#0e1111">
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+    <!-- <NuxtLayout> -->
+    <NuxtPage />
+    <!-- </NuxtLayout> -->
   </div>
 </template>

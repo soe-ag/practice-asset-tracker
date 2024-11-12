@@ -1,14 +1,20 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import sampleData from "~/utils/testdata2.json";
+import sampleJsonData from "~/utils/teslaAll.json";
 
 const props = defineProps({
   chartType: {
     type: String,
     default: "line",
   },
+  apiData: {
+    type: Array,
+    default: () => [],
+  },
 });
+
+const jsonChartData = getDataFromJson(sampleJsonData);
 
 // Function to get the correct series constructor name for current series type.
 function getChartSeriesConstructorName(type) {
@@ -41,8 +47,6 @@ const seriesOptions = ref({
 // const chartType = ref("area");
 const autosize = true;
 
-const result = getDataFromJson(sampleData);
-
 const fitContent = () => {
   if (!chart) return;
   chart.timeScale().fitContent();
@@ -65,7 +69,7 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(props.chartType);
   series = chart[seriesConstructor](seriesOptions);
-  series.setData(result);
+  series.setData(props.apiData.length > 0 ? props.apiData : jsonChartData);
 };
 
 // const baseLineOptions = {
@@ -94,7 +98,7 @@ onMounted(() => {
   // }
 
   // const baselineSeries = chart.addBaselineSeries(baseLineOptions);
-  // baselineSeries.setData(result);
+  // baselineSeries.setData(jsonData);
   // if (props.chartType !== "baseline") chart.removeSeries(baselineSeries);
 
   chart.timeScale().fitContent();
@@ -150,7 +154,7 @@ watch(
     addSeriesAndData();
     // if (newType === "baseline") {
     //   const baselineSeries = chart.addBaselineSeries(baseLineOptions);
-    //   baselineSeries.setData(result);
+    //   baselineSeries.setData(jsonData);
     // }
   }
 );

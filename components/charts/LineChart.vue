@@ -277,12 +277,12 @@ watch(
 //     chart.timeScale().applyOptions(newOptions);
 //   }
 // );
+// {{ apiData }}
+// {{ props.apiData.length }}
 </script>
 
 <template>
   <div>
     <div ref="chartContainer" class="h-80" />
-    {{ apiData }}
-    {{ props.apiData.length }}
   </div>
 </template>
