@@ -1,7 +1,25 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import dataTwo from "~/utils/testdata2.json";
+import sampleJsonData from "~/utils/teslaAll.json";
+
+const sampleData = getDataFromJson(sampleJsonData);
+const sampleDataWithVolume = getVolumeDataFromJson(sampleJsonData);
+
+const props = defineProps({
+  apiData: {
+    type: Array,
+    default: () => [],
+  },
+  apiVolumeData: {
+    type: Array,
+    default: () => [],
+  },
+  isLive: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 // Function to get the correct series constructor name for current series type.
 function getChartSeriesConstructorName(type) {
@@ -46,14 +64,14 @@ const resizeHandler = () => {
   chart.resize(dimensions.width, dimensions.height);
 };
 
-// const mainData = getDataFromJson(dataTwo);
-const volumeData = getVolumeDataFromJson(dataTwo);
+// const mainData = getDataFromJson(sampleJsonData);
+// const volumeData = getVolumeDataFromJson(sampleJsonData);
 
 // Creates the chart series and sets the data.
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
-  series.setData(getDataFromJson(dataTwo));
+  series.setData(props.isLive ? props.apiData : sampleData);
 };
 
 onMounted(() => {
@@ -88,7 +106,9 @@ onMounted(() => {
     },
   });
 
-  volumeSeries.setData(volumeData);
+  volumeSeries.setData(
+    props.isLive ? props.apiVolumeData : sampleDataWithVolume
+  );
 
   chart.timeScale().fitContent();
 
@@ -170,11 +190,5 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="chartContainer" class="lw-chart" />
+  <div ref="chartContainer" class="h-80" />
 </template>
-
-<style scoped>
-.lw-chart {
-  height: 100%;
-}
-</style>

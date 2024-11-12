@@ -4,7 +4,7 @@ import LineChart from "~/components/charts/LineChart.vue";
 import MultipleTypeChart from "~/components/charts/MultipleTypeChart.vue";
 import VolumeChart from "~/components/charts/VolumeChart.vue";
 import type { RefinedData } from "~/utils/type";
-import sampleData from "~/utils/testdata2.json";
+import sampleJsonData from "~/utils/teslaAll.json";
 
 const chartType = ref("area");
 
@@ -28,6 +28,8 @@ const selectedStock = ref<DropDownType | null>(stockList.value[0]);
 const config = useRuntimeConfig();
 const rawData = ref<RawStockData>();
 const finalData = ref<RefinedData[]>([]);
+const finalDataWithVolume = ref<RefinedData[]>([]);
+const isLiveData = ref(false);
 
 const fetchStockData = async (symbol: string) => {
   // const symbol = "TSLA";
@@ -39,7 +41,11 @@ const fetchStockData = async (symbol: string) => {
 
     // change function name later
     finalData.value = getDataFromJson(
-      rawData.value ? rawData.value : sampleData
+      rawData.value ? rawData.value : sampleJsonData
+    );
+
+    finalDataWithVolume.value = getVolumeDataFromJson(
+      rawData.value ? rawData.value : sampleJsonData
     );
     console.log("api return data is ", finalData.value);
   } catch (error) {
@@ -59,7 +65,7 @@ const fetchStockData = async (symbol: string) => {
 
 <template>
   <div class="bg-#000">
-    <!-- {{ selectedStock?.code }} -->
+    {{ selectedStock?.code }}, is live data: {{ isLiveData }}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 p-6 text-gray-400">
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <div class="flex gap-2 items-center">
@@ -77,20 +83,28 @@ const fetchStockData = async (symbol: string) => {
             }"
           />
         </div>
+        <div class="text-xs text-gray-500">
+          {{ !isLiveData && "Sample Tesla Data" }}
+        </div>
 
         <LineChart
           class="h-70 relative"
           :quote="selectedStock?.name"
           :api-data="finalData"
+          :is-live="isLiveData"
         />
       </div>
 
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
-        <h4 class="mb-4">Series Comparison Chart</h4>
-        <CompareChart class="h-70" />
+        <h4 class="mb-2">Series Comparison Chart</h4>
+        <div class="text-xs text-gray-500">
+          {{ !isLiveData && "Sample Tesla Data" }}
+        </div>
+
+        <CompareChart class="h-70" :is-live="isLiveData" />
       </div>
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
-        <div class="flex gap-2 items-center mb-4">
+        <div class="flex gap-2 items-center mb-2">
           <h4 class="mr-4">Multiple Type Chart</h4>
 
           <div
@@ -128,13 +142,28 @@ const fetchStockData = async (symbol: string) => {
             </button>
           </div>
         </div>
+        <div class="text-xs text-gray-500">
+          {{ !isLiveData && "Sample Tesla Data" }}
+        </div>
         <!-- <p>{{ chartType }}</p> -->
-        <MultipleTypeChart class="h-70" :chart-type="chartType" />
+        <MultipleTypeChart
+          class="h-70"
+          :chart-type="chartType"
+          :is-live="isLiveData"
+        />
       </div>
 
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
-        <h4 class="mb-4">Volume Chart</h4>
-        <VolumeChart class="h-70" :api-data="finalData" />
+        <h4 class="mb-2">Volume Chart</h4>
+        <div class="text-xs text-gray-500">
+          {{ !isLiveData && "Sample Tesla Data" }}
+        </div>
+        <VolumeChart
+          class="h-70"
+          :api-data="finalData"
+          :api-volume-data="finalDataWithVolume"
+          :is-live="isLiveData"
+        />
       </div>
     </div>
     <div class="my-1">

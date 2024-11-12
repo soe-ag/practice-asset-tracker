@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
 import sampleJsonData from "~/utils/teslaAll.json";
 
+const sampleData = getDataFromJson(sampleJsonData);
+
 const props = defineProps({
   chartType: {
     type: String,
@@ -12,9 +14,11 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  isLive: {
+    type: Boolean,
+    default: false,
+  },
 });
-
-const jsonChartData = getDataFromJson(sampleJsonData);
 
 // Function to get the correct series constructor name for current series type.
 function getChartSeriesConstructorName(type) {
@@ -69,7 +73,7 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(props.chartType);
   series = chart[seriesConstructor](seriesOptions);
-  series.setData(props.apiData.length > 0 ? props.apiData : jsonChartData);
+  series.setData(props.isLive ? props.apiData : sampleData);
 };
 
 // const baseLineOptions = {
@@ -202,7 +206,6 @@ watch(
 
 <template>
   <div>
-    <!-- <p>aa a{{ chartType }}</p> -->
     <div ref="chartContainer" class="h-80" />
   </div>
 </template>

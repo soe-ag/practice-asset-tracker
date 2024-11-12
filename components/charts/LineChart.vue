@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
 import sampleJsonData from "~/utils/teslaAll.json";
 
+const sampleData = getDataFromJson(sampleJsonData);
+
 const props = defineProps({
   quote: {
     type: String,
@@ -11,6 +13,10 @@ const props = defineProps({
   apiData: {
     type: Array,
     default: () => [],
+  },
+  isLive: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -76,9 +82,7 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
-  series.setData(
-    props.apiData.length > 0 ? props.apiData : getDataFromJson(sampleJsonData)
-  );
+  series.setData(props.isLive ? props.apiData : sampleData);
   series.priceScale().applyOptions({
     scaleMargins: {
       top: 0.3, // leave some space for the legend
@@ -94,8 +98,8 @@ onMounted(() => {
   addSeriesAndData();
   // }
 
-  console.log("within onMounted", props.apiData.length);
-  console.log("within onMounted", getDataFromJson(sampleJsonData)[0]);
+  // console.log("within onMounted", props.apiData.length);
+  // console.log("within onMounted", getDataFromJson(sampleJsonData)[0]);
   //   if (priceScaleOptions) {
   //     chart.priceScale().applyOptions(priceScaleOptions);
   //   }
@@ -178,7 +182,7 @@ onMounted(() => {
   }
 
   const maData = calculateMovingAverageSeriesData(
-    props.apiData.length > 0 ? props.apiData : getDataFromJson(sampleJsonData),
+    props.isLive ? props.apiData : sampleData,
     50
   );
   // console.log(maData);
