@@ -3,7 +3,7 @@ import CompareChart from "~/components/charts/CompareChart.vue";
 import LineChart from "~/components/charts/LineChart.vue";
 import MultipleTypeChart from "~/components/charts/MultipleTypeChart.vue";
 import VolumeChart from "~/components/charts/VolumeChart.vue";
-import type { RefinedData } from "~/utils/type";
+import type { RawStockData, RefinedData } from "~/utils/type";
 import sampleJsonData from "~/utils/teslaAll.json";
 
 const chartType = ref("area");
@@ -37,15 +37,16 @@ const fetchStockData = async (symbol: string) => {
   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${apiKey}`;
 
   try {
-    rawData.value = await $fetch(url);
+    const response: RawStockData = await $fetch(url);
+    if (!response) {
+      throw new Error(`API error ...`);
+    }
 
     // change function name later
-    finalData.value = getDataFromJson(
-      rawData.value ? rawData.value : sampleJsonData
-    );
+    finalData.value = getDataFromJson(response ? response : sampleJsonData);
 
     finalDataWithVolume.value = getVolumeDataFromJson(
-      rawData.value ? rawData.value : sampleJsonData
+      response ? response : sampleJsonData
     );
     console.log("api return data is ", finalData.value);
   } catch (error) {
@@ -65,7 +66,6 @@ const fetchStockData = async (symbol: string) => {
 
 <template>
   <div class="bg-#000">
-    {{ selectedStock?.code }}, is live data: {{ isLiveData }}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 p-6 text-gray-400">
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <div class="flex gap-2 items-center">
@@ -84,11 +84,11 @@ const fetchStockData = async (symbol: string) => {
           />
         </div>
         <div class="text-xs text-gray-500">
-          {{ !isLiveData && "Sample Tesla Data" }}
+          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
+        {{ finalData[498] }}
 
         <LineChart
-          class="h-70 relative"
           :quote="selectedStock?.name"
           :api-data="finalData"
           :is-live="isLiveData"
@@ -98,7 +98,7 @@ const fetchStockData = async (symbol: string) => {
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-2">Series Comparison Chart</h4>
         <div class="text-xs text-gray-500">
-          {{ !isLiveData && "Sample Tesla Data" }}
+          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
 
         <CompareChart class="h-70" :is-live="isLiveData" />
@@ -143,11 +143,13 @@ const fetchStockData = async (symbol: string) => {
           </div>
         </div>
         <div class="text-xs text-gray-500">
-          {{ !isLiveData && "Sample Tesla Data" }}
+          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
         <!-- <p>{{ chartType }}</p> -->
+        {{ finalData[498] }}
+
         <MultipleTypeChart
-          class="h-70"
+          :api-data="finalData"
           :chart-type="chartType"
           :is-live="isLiveData"
         />
@@ -156,10 +158,10 @@ const fetchStockData = async (symbol: string) => {
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-2">Volume Chart</h4>
         <div class="text-xs text-gray-500">
-          {{ !isLiveData && "Sample Tesla Data" }}
+          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
+        {{ finalData[498] }}
         <VolumeChart
-          class="h-70"
           :api-data="finalData"
           :api-volume-data="finalDataWithVolume"
           :is-live="isLiveData"
@@ -171,7 +173,8 @@ const fetchStockData = async (symbol: string) => {
     </div>
 
     <footer class="text-xs text-end my-2 text-gray-400">
-      TradingView Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
+      {{ selectedStock?.code }}, is live data: {{ isLiveData }} / TradingView
+      Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
       https://www.tradingview.com/
     </footer>
   </div>

@@ -74,8 +74,13 @@ const addSeriesAndData = () => {
   series.setData(props.isLive ? props.apiData : sampleData);
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Create the Lightweight Charts Instance using the container ref.
+
+  while (props.isLive && props.apiData.length === 0) {
+    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+  }
+
   chart = createChart(chartContainer.value, chartOptions);
   addSeriesAndData();
 
@@ -190,5 +195,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  {{ props.isLive }}, length: {{ props.apiData.length }},
+  {{ props.apiData[495] ? props.apiData[498].value : "no api data" }}
   <div ref="chartContainer" class="h-80" />
 </template>

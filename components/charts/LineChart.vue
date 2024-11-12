@@ -91,8 +91,13 @@ const addSeriesAndData = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Create the Lightweight Charts Instance using the container ref.
+
+  while (props.isLive && props.apiData.length === 0) {
+    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+  }
+
   chart = createChart(chartContainer.value, chartOptions);
   // if (props.apiData.length > 0) {
   addSeriesAndData();
@@ -234,19 +239,20 @@ onUnmounted(() => {
 watch(
   () => props.apiData,
   (newData) => {
+    if (!props.isLive) return;
     console.log("newData is coming", newData[0].value);
     if (!series) return;
     series.setData(newData);
 
     // todo: not changing
-    const maData = calculateMovingAverageSeriesData(newData, 50);
-    // console.log(maData);
+    // const maData = calculateMovingAverageSeriesData(newData, 50);
+    // // console.log(maData);
 
-    const maSeries = chart.addLineSeries({
-      color: "rgb(225, 87, 90)",
-      lineWidth: 1,
-    });
-    maSeries.setData(maData);
+    // const maSeries = chart.addLineSeries({
+    //   color: "rgb(225, 87, 90)",
+    //   lineWidth: 1,
+    // });
+    // maSeries.setData(maData);
   }
 );
 
@@ -287,6 +293,8 @@ watch(
 
 <template>
   <div>
+    {{ props.isLive }},
+    {{ props.apiData[495] ? props.apiData[498].value : "no api data" }}
     <div ref="chartContainer" class="h-80" />
   </div>
 </template>
