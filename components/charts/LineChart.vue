@@ -82,7 +82,9 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
-  series.setData(props.isLive ? props.apiData : sampleData);
+  series.setData(
+    props.isLive && props.apiData.length > 0 ? props.apiData : sampleData
+  );
   series.priceScale().applyOptions({
     scaleMargins: {
       top: 0.3, // leave some space for the legend

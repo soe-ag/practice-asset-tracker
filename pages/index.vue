@@ -24,44 +24,78 @@ const stockList = ref([
 ]);
 
 const selectedStock = ref<DropDownType | null>(stockList.value[0]);
+const compareStockOne = ref<DropDownType | null>(null);
+const compareStockTwo = ref<DropDownType | null>(null);
 
 const config = useRuntimeConfig();
-const rawData = ref<RawStockData>();
+// const rawData = ref<RawStockData>();
 const finalData = ref<RefinedData[]>([]);
 const finalDataWithVolume = ref<RefinedData[]>([]);
-const isLiveData = ref(false);
+const isLiveData = ref(true);
 
-const fetchStockData = async (symbol: string) => {
+const compareDataOne = ref<RefinedData[]>([]);
+const compareDataTwo = ref<RefinedData[]>([]);
+
+const fetchStockData = async (
+  symbol: string
+): Promise<RawStockData | undefined> => {
   // const symbol = "TSLA";
   const apiKey = config.public.stockApiKey;
   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${apiKey}`;
 
   try {
-    const response: RawStockData = await $fetch(url);
-    if (!response) {
-      throw new Error(`API error ...`);
-    }
+    const response = await $fetch<RawStockData>(url);
+    console.log("Fetched raw data:", response);
+    return response; // if (!response) {
+    //   throw new Error(`API error ...`);
+    // }
 
     // change function name later
-    finalData.value = getDataFromJson(response ? response : sampleJsonData);
+    // finalData.value = getDataFromJson(response ? response : sampleJsonData);
 
-    finalDataWithVolume.value = getVolumeDataFromJson(
-      response ? response : sampleJsonData
-    );
-    console.log("api return data is ", finalData.value);
+    // finalDataWithVolume.value = getVolumeDataFromJson(
+    //   response ? response : sampleJsonData
+    // );
+    // console.log("api return data is ", finalData.value);
   } catch (error) {
     console.error("Error fetching stock data:", error);
+    return undefined;
   }
 };
 
-// onMounted(() => {
-//   fetchStockData("TSLA");
-// });
+onMounted(async () => {
+  const rawData = await fetchStockData("TSLA");
 
-// watch(selectedStock, () => {
-//   if (selectedStock.value === null) return;
-//   fetchStockData(selectedStock.value.code);
-// });
+  if (rawData && rawData["Time Series (Daily)"]) {
+    finalData.value = getDataFromJson(rawData);
+    finalDataWithVolume.value = getVolumeDataFromJson(rawData);
+  }
+});
+
+watch(selectedStock, async () => {
+  if (selectedStock.value === null) return;
+  const response = await fetchStockData(selectedStock.value.code);
+  if (response && response["Time Series (Daily)"]) {
+    finalData.value = getDataFromJson(response);
+    finalDataWithVolume.value = getVolumeDataFromJson(response);
+  }
+});
+
+watch(compareStockOne, async () => {
+  if (compareStockOne.value === null) return;
+  const response = await fetchStockData(compareStockOne.value.code);
+  if (response && response["Time Series (Daily)"]) {
+    compareDataOne.value = getDataFromJson(response);
+  }
+});
+
+watch(compareStockTwo, async () => {
+  if (compareStockTwo.value === null) return;
+  const response = await fetchStockData(compareStockTwo.value.code);
+  if (response && response["Time Series (Daily)"]) {
+    compareDataTwo.value = getDataFromJson(response);
+  }
+});
 </script>
 
 <template>
@@ -98,10 +132,16 @@ const fetchStockData = async (symbol: string) => {
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-2">Series Comparison Chart</h4>
         <div class="text-xs text-gray-500">
-          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
+          {{ isLiveData ? "Live Data" : "Sample Data (Tesla, Apple, Google)" }}
         </div>
 
-        <CompareChart class="h-70" :is-live="isLiveData" />
+        <CompareChart
+          class="h-70"
+          :is-live="isLiveData"
+          :api-data="finalData"
+          :compare-one="compareDataOne"
+          :compare-two="compareDataTwo"
+        />
       </div>
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <div class="flex gap-2 items-center mb-2">

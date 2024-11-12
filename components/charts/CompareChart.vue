@@ -1,9 +1,32 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import dataOne from "~/utils/testdata1.json";
-import dataTwo from "~/utils/testdata2.json";
-import dataThree from "~/utils/testdata3.json";
+import sampleTeslaJsonData from "~/utils/teslaAll.json";
+import sampleAppleJsonData from "~/utils/appleAll.json";
+import sampleGoogleJsonData from "~/utils/googleAll.json";
+
+const sampleTeslaData = getDataFromJson(sampleTeslaJsonData);
+const sampleAppleData = getDataFromJson(sampleAppleJsonData);
+const sampleGoogleData = getDataFromJson(sampleGoogleJsonData);
+
+const props = defineProps({
+  apiData: {
+    type: Array,
+    default: () => [],
+  },
+  compareOne: {
+    type: Array,
+    default: () => [],
+  },
+  compareTwo: {
+    type: Array,
+    default: () => [],
+  },
+  isLive: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 // // Function to get the correct series constructor name for current series type.
 // function getChartSeriesConstructorName(type) {
@@ -65,13 +88,23 @@ onMounted(() => {
   const lineSeriesTwo = chart.addLineSeries({ color: "rgb(225, 87, 90)" });
   const lineSeriesThree = chart.addLineSeries({ color: "rgb(242, 142, 44)" });
 
-  const lineSeriesOneData = getDataFromJson(dataOne);
-  const lineSeriesTwoData = getDataFromJson(dataTwo);
-  const lineSeriesThreeData = getDataFromJson(dataThree);
+  // const lineSeriesOneData = getDataFromJson(dataOne);
+  // const lineSeriesTwoData = getDataFromJson(dataTwo);
+  // const lineSeriesThreeData = getDataFromJson(dataThree);
 
-  lineSeriesOne.setData(lineSeriesOneData);
-  lineSeriesTwo.setData(lineSeriesTwoData);
-  lineSeriesThree.setData(lineSeriesThreeData);
+  lineSeriesOne.setData(
+    props.isLive && props.apiData ? props.apiData : sampleTeslaData
+  );
+  lineSeriesTwo.setData(
+    props.isLive && props.compareOne.length > 0
+      ? props.compareOne
+      : sampleAppleData
+  );
+  lineSeriesThree.setData(
+    props.isLive && props.compareTwo.length > 0
+      ? props.compareTwo
+      : sampleGoogleData
+  );
 
   //   if (priceScaleOptions) {
   //     chart.priceScale().applyOptions(priceScaleOptions);

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
+import { ref, onMounted, onUnmounted, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
 import sampleJsonData from "~/utils/teslaAll.json";
 
