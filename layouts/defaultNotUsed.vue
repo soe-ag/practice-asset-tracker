@@ -21,11 +21,6 @@ const menuItems = ref([
     icon: "",
     route: "/others",
   },
-  // {
-  //   label: "",
-  //   icon: "i-logos-nuxt-icon",
-  //   route: "/sample",
-  // },
 ]);
 
 const route = useRoute();

@@ -36,6 +36,7 @@ const convertDollarToYen = (dollar: number, rate: number): number => {
   return dollar * rate;
 };
 
+// todo: change the function name
 export const getDataFromJson = (jsonData: RawStockData) => {
   return Object.entries(jsonData["Time Series (Daily)"])
     .map(([date, day]) => ({

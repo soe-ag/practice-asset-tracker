@@ -1,9 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-// import sampleJsonData from "~/utils/teslaAll.json";
-
-// const sampleData = getDataFromJson(sampleJsonData);
 
 const props = defineProps({
   chartType: {
@@ -14,19 +11,12 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  isLive: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-// Function to get the correct series constructor name for current series type.
 function getChartSeriesConstructorName(type) {
   return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
 }
 
-// Lightweight Chart instances are stored as normal JS variables
-// If you need to use a ref then it is recommended that you use `shallowRef` instead
 let series;
 let chart;
 
@@ -48,7 +38,6 @@ const chartOptions = {
 const seriesOptions = ref({
   color: "rgb(45, 77, 205)",
 });
-// const chartType = ref("area");
 const autosize = true;
 
 const fitContent = () => {
@@ -62,7 +51,6 @@ const getChart = () => {
 
 defineExpose({ fitContent, getChart });
 
-// Auto resizes the chart when the browser window is resized.
 const resizeHandler = () => {
   if (!chart || !chartContainer.value) return;
   const dimensions = chartContainer.value.getBoundingClientRect();
@@ -76,6 +64,7 @@ const addSeriesAndData = () => {
   series.setData(props.apiData);
 };
 
+// todo: baseLine
 // const baseLineOptions = {
 //   baseValue: { type: "price", price: 220 },
 //   topLineColor: "rgba( 38, 166, 154, 1)",
@@ -90,10 +79,9 @@ const addSeriesAndData = () => {
 
 onMounted(async () => {
   while (props.apiData.length === 0) {
-    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
 
-  // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
   addSeriesAndData();
 
@@ -129,17 +117,6 @@ onUnmounted(() => {
   // }
 });
 
-/*
- * Watch for changes to any of the component properties.
-
- * If an options property is changed then we will apply those options
- * on top of any existing options previously set (since we are using the
- * `applyOptions` method).
- *
- * If there is a change to the chart type, then the existing series is removed
- * and the new series is created, and assigned the data.
- *
- */
 watch(
   () => autosize,
   (enabled) => {

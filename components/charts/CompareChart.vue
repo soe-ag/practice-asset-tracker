@@ -1,13 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-// import sampleTeslaJsonData from "~/utils/teslaAll.json";
-// import sampleAppleJsonData from "~/utils/appleAll.json";
-// import sampleGoogleJsonData from "~/utils/googleAll.json";
-
-// const sampleTeslaData = getDataFromJson(sampleTeslaJsonData);
-// const sampleAppleData = getDataFromJson(sampleAppleJsonData);
-// const sampleGoogleData = getDataFromJson(sampleGoogleJsonData);
 
 const props = defineProps({
   apiData: {
@@ -22,16 +15,7 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  // isLive: {
-  //   type: Boolean,
-  //   default: false,
-  // },
 });
-
-// // Function to get the correct series constructor name for current series type.
-// function getChartSeriesConstructorName(type) {
-//   return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
-// }
 
 // Lightweight Chart instances are stored as normal JS variables
 // If you need to use a ref then it is recommended that you use `shallowRef` instead
@@ -66,37 +50,25 @@ const getChart = () => {
 
 defineExpose({ fitContent, getChart });
 
-// Auto resizes the chart when the browser window is resized.
 const resizeHandler = () => {
   if (!chart || !chartContainer.value) return;
   const dimensions = chartContainer.value.getBoundingClientRect();
   chart.resize(dimensions.width, dimensions.height);
 };
 
-// Creates the chart series and sets the data.
-// const addSeriesAndData = (props) => {
-//   const seriesConstructor = getChartSeriesConstructorName("line");
-//   series = chart[seriesConstructor](props.seriesOptions);
-//   series.setData(props.data);
-// };
 let lineSeriesOne;
 let lineSeriesTwo;
 let lineSeriesThree;
 
 onMounted(async () => {
   while (props.apiData.length === 0) {
-    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
 
   lineSeriesOne = chart.addLineSeries({ color: "#2962ff" });
   lineSeriesTwo = chart.addLineSeries({ color: "#e15759" });
   lineSeriesThree = chart.addLineSeries({ color: "#f28e2c" });
-
-  // const lineSeriesOneData = getDataFromJson(dataOne);
-  // const lineSeriesTwoData = getDataFromJson(dataTwo);
-  // const lineSeriesThreeData = getDataFromJson(dataThree);
 
   lineSeriesOne.setData(props.apiData);
   lineSeriesTwo.setData(props.compareOne);
@@ -127,17 +99,6 @@ onUnmounted(() => {
   }
 });
 
-/*
- * Watch for changes to any of the component properties.
-
- * If an options property is changed then we will apply those options
- * on top of any existing options previously set (since we are using the
- * `applyOptions` method).
- * 
- * If there is a change to the chart type, then the existing series is removed
- * and the new series is created, and assigned the data.
- * 
- */
 watch(
   () => autosize,
   (enabled) => {
@@ -155,7 +116,7 @@ watch(
 //     if (series && chart) {
 //       chart.removeSeries(series);
 //     }
-//     addSeriesAndData(props);
+//     addSeriesAndData(props.apiData);
 //   }
 // );
 

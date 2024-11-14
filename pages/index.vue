@@ -51,17 +51,7 @@ const fetchStockData = async (
   try {
     const response = await $fetch<RawStockData>(url);
     console.log("Fetched from api ...");
-    return response; // if (!response) {
-    //   throw new Error(`API error ...`);
-    // }
-
-    // change function name later
-    // finalData.value = getDataFromJson(response ? response : sampleJsonData);
-
-    // finalDataWithVolume.value = getVolumeDataFromJson(
-    //   response ? response : sampleJsonData
-    // );
-    // console.log("api return data is ", finalData.value);
+    return response;
   } catch (error) {
     console.error("Error fetching stock data:", error);
     return undefined;
@@ -273,7 +263,7 @@ watch(compareStockTwo, async () => {
       <WidgetOne />
     </div>
 
-    <footer class="text-xs text-end my-2 text-gray-400">
+    <footer class="text-xs text-end my-1 text-gray-400">
       <!-- {{ selectedStock?.code }}, is live data: {{ isLiveData }} / TradingView -->
       Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
       https://www.tradingview.com/

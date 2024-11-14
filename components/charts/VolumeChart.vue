@@ -1,10 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-// import sampleJsonData from "~/utils/teslaAll.json";
-
-// const sampleData = getDataFromJson(sampleJsonData);
-// const sampleDataWithVolume = getVolumeDataFromJson(sampleJsonData);
 
 const props = defineProps({
   apiData: {
@@ -15,13 +11,8 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  isLive: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-// Function to get the correct series constructor name for current series type.
 function getChartSeriesConstructorName(type) {
   return `add${type.charAt(0).toUpperCase() + type.slice(1)}Series`;
 }
@@ -58,17 +49,12 @@ const getChart = () => {
 
 defineExpose({ fitContent, getChart });
 
-// Auto resizes the chart when the browser window is resized.
 const resizeHandler = () => {
   if (!chart || !chartContainer.value) return;
   const dimensions = chartContainer.value.getBoundingClientRect();
   chart.resize(dimensions.width, dimensions.height);
 };
 
-// const mainData = getDataFromJson(sampleJsonData);
-// const volumeData = getVolumeDataFromJson(sampleJsonData);
-
-// Creates the chart series and sets the data.
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
@@ -76,10 +62,8 @@ const addSeriesAndData = () => {
 };
 
 onMounted(async () => {
-  // Create the Lightweight Charts Instance using the container ref.
-
   while (props.apiData.length === 0) {
-    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
 
   chart = createChart(chartContainer.value, chartOptions);
@@ -98,8 +82,7 @@ onMounted(async () => {
     priceFormat: {
       type: "volume",
     },
-    priceScaleId: "", // set as an overlay by setting a blank priceScaleId
-    // set the positioning of the volume series
+    priceScaleId: "",
     scaleMargins: {
       top: 0.7, // highest point of the series will be 70% away from the top
       bottom: 0,
