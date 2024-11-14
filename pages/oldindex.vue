@@ -5,7 +5,7 @@ import type { ChartOptions } from "chart.js";
 import testdata1 from "~/utils/testdata1.json";
 import testdata2 from "~/utils/testdata2.json";
 import testdata3 from "~/utils/testdata3.json";
-import type { StockData } from "~/utils/type";
+// import type { StockData } from "~/utils/type";
 
 // const config = useRuntimeConfig();
 // const client = useSupabaseClient();

@@ -70,16 +70,16 @@ const fetchStockData = async (
 
 onMounted(async () => {
   // const rawData = await fetchStockData("TSLA");
-  const rawData = {}; // set for reducing api call on first rendered
+  // const rawData = {}; // set for reducing api call on first rendered
 
-  if (rawData && rawData["Time Series (Daily)"]) {
-    finalData.value = getDataFromJson(rawData);
-    finalDataWithVolume.value = getVolumeDataFromJson(rawData);
-  } else {
-    console.log("showing sample data");
-    finalData.value = getDataFromJson(sampleTeslaJsonData);
-    finalDataWithVolume.value = getVolumeDataFromJson(sampleTeslaJsonData);
-  }
+  // if (rawData && rawData["Time Series (Daily)"]) {
+  //   finalData.value = getDataFromJson(rawData);
+  //   finalDataWithVolume.value = getVolumeDataFromJson(rawData);
+  // } else {
+  console.log("showing sample data");
+  finalData.value = getDataFromJson(sampleTeslaJsonData);
+  finalDataWithVolume.value = getVolumeDataFromJson(sampleTeslaJsonData);
+  // }
 
   compareDataOne.value = getDataFromJson(sampleAppleJsonData);
   compareDataTwo.value = getDataFromJson(sampleGoogleJsonData);
@@ -143,7 +143,15 @@ watch(compareStockTwo, async () => {
         <div class="text-xs text-gray-500">
           <div class="flex gap-1 items-center">
             <Checkbox v-model="isLiveData" binary size="small" />
-            <p>{{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}</p>
+            <p>
+              {{
+                isLiveData
+                  ? "Live Data"
+                  : selectedStock?.code === "TSLA"
+                  ? "Sample Data: Tesla"
+                  : selectedStock?.name
+              }}
+            </p>
             <p v-if="isLiveData" class="text-red-4 opacity-60 text-2.5">
               (Once you reach 25 API requests in a day, sample data will be
               displayed instead)
@@ -163,7 +171,13 @@ watch(compareStockTwo, async () => {
         <h4 class="mb-2">Series Comparison Chart</h4>
         <div class="flex gap-2 items-center">
           <div class="text-xs text-gray-500">
-            {{ isLiveData ? "Live Data" : "Sample Data" }}
+            {{
+              isLiveData
+                ? "Live Data"
+                : selectedStock?.code === "TSLA"
+                ? "Sample Data"
+                : ""
+            }}
           </div>
           <PartsComparisonLegend
             :label1="selectedStock?.name"
@@ -218,7 +232,13 @@ watch(compareStockTwo, async () => {
           </div>
         </div>
         <div class="text-xs text-gray-500">
-          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
+          {{
+            isLiveData
+              ? "Live Data"
+              : selectedStock?.code === "TSLA"
+              ? "Sample Data: Tesla"
+              : selectedStock?.name
+          }}
         </div>
         <!-- <p>{{ chartType }}</p> -->
         <!-- {{ finalData[498] }} -->
@@ -233,7 +253,13 @@ watch(compareStockTwo, async () => {
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-2">Volume Chart</h4>
         <div class="text-xs text-gray-500">
-          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
+          {{
+            isLiveData
+              ? "Live Data"
+              : selectedStock?.code === "TSLA"
+              ? "Sample Data: Tesla"
+              : selectedStock?.name
+          }}
         </div>
         <!-- {{ finalData[498] }} -->
         <VolumeChart
