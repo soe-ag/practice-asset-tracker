@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import sampleJsonData from "~/utils/teslaAll.json";
+// import sampleJsonData from "~/utils/teslaAll.json";
 
-const sampleData = getDataFromJson(sampleJsonData);
-const sampleDataWithVolume = getVolumeDataFromJson(sampleJsonData);
+// const sampleData = getDataFromJson(sampleJsonData);
+// const sampleDataWithVolume = getVolumeDataFromJson(sampleJsonData);
 
 const props = defineProps({
   apiData: {
@@ -27,6 +27,7 @@ function getChartSeriesConstructorName(type) {
 }
 
 let series;
+let volumeSeries;
 let chart;
 const chartOptions = {
   layout: {
@@ -71,13 +72,13 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
-  series.setData(props.isLive ? props.apiData : sampleData);
+  series.setData(props.apiData);
 };
 
 onMounted(async () => {
   // Create the Lightweight Charts Instance using the container ref.
 
-  while (props.isLive && props.apiData.length === 0) {
+  while (props.apiData.length === 0) {
     await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
   }
 
@@ -92,7 +93,7 @@ onMounted(async () => {
   //     chart.timeScale().applyOptions(timeScaleOptions);
   //   }
 
-  const volumeSeries = chart.addHistogramSeries({
+  volumeSeries = chart.addHistogramSeries({
     color: "#079a80",
     priceFormat: {
       type: "volume",
@@ -111,9 +112,7 @@ onMounted(async () => {
     },
   });
 
-  volumeSeries.setData(
-    props.isLive ? props.apiVolumeData : sampleDataWithVolume
-  );
+  volumeSeries.setData(props.apiVolumeData);
 
   chart.timeScale().fitContent();
 
@@ -132,16 +131,16 @@ onUnmounted(() => {
   }
 });
 
-// watch(
-//   () => autosize,
-//   (enabled) => {
-//     if (!enabled) {
-//       window.removeEventListener("resize", resizeHandler);
-//       return;
-//     }
-//     window.addEventListener("resize", resizeHandler);
-//   }
-// );
+watch(
+  () => autosize,
+  (enabled) => {
+    if (!enabled) {
+      window.removeEventListener("resize", resizeHandler);
+      return;
+    }
+    window.addEventListener("resize", resizeHandler);
+  }
+);
 
 // watch(
 //   () => chartType,
@@ -153,13 +152,24 @@ onUnmounted(() => {
 //   }
 // );
 
-// watch(
-//   () => data,
-//   (newData) => {
-//     if (!series) return;
-//     series.setData(newData);
-//   }
-// );
+watch(
+  () => props.apiData,
+  (newData) => {
+    if (!series) return;
+    console.log("Volume Chart: data updated");
+    series.setData(newData);
+  }
+);
+
+watch(
+  () => props.apiVolumeData,
+  (newData) => {
+    if (!volumeSeries) return;
+    console.log("Volume Chart: volume also updated");
+    console.log("------end------");
+    volumeSeries.setData(newData);
+  }
+);
 
 // watch(
 //   () => chartOptions,
@@ -195,7 +205,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  {{ props.isLive }}, length: {{ props.apiData.length }},
-  {{ props.apiData[495] ? props.apiData[498].value : "no api data" }}
+  <!-- {{ props.isLive }}, length: {{ props.apiData.length }},
+  {{ props.apiData[495] ? props.apiData[498].value : "no api data" }} -->
   <div ref="chartContainer" class="h-80" />
 </template>

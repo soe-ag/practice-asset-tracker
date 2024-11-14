@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import sampleJsonData from "~/utils/teslaAll.json";
+// import sampleJsonData from "~/utils/teslaAll.json";
 
-const sampleData = getDataFromJson(sampleJsonData);
+// const sampleData = getDataFromJson(sampleJsonData);
 
 const props = defineProps({
   chartType: {
@@ -73,7 +73,7 @@ const resizeHandler = () => {
 const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(props.chartType);
   series = chart[seriesConstructor](seriesOptions);
-  series.setData(props.isLive ? props.apiData : sampleData);
+  series.setData(props.apiData);
 };
 
 // const baseLineOptions = {
@@ -89,7 +89,7 @@ const addSeriesAndData = () => {
 // let baselineSeries;
 
 onMounted(async () => {
-  while (props.isLive && props.apiData.length === 0) {
+  while (props.apiData.length === 0) {
     await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
   }
 
@@ -167,13 +167,14 @@ watch(
   }
 );
 
-// watch(
-//   () => data,
-//   (newData) => {
-//     if (!series) return;
-//     series.setData(newData);
-//   }
-// );
+watch(
+  () => props.apiData,
+  (newData) => {
+    if (!series) return;
+    console.log("Type Chart: data updated");
+    series.setData(newData);
+  }
+);
 
 watch(
   () => chartOptions,
@@ -210,8 +211,8 @@ watch(
 
 <template>
   <div>
-    {{ props.isLive }},
-    {{ props.apiData[498] ? props.apiData[498].value : "no api data" }}
+    <!-- {{ props.isLive }},
+    {{ props.apiData[498] ? props.apiData[498].value : "no api data" }} -->
     <div ref="chartContainer" class="h-80" />
   </div>
 </template>

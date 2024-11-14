@@ -4,7 +4,9 @@ import LineChart from "~/components/charts/LineChart.vue";
 import MultipleTypeChart from "~/components/charts/MultipleTypeChart.vue";
 import VolumeChart from "~/components/charts/VolumeChart.vue";
 import type { RawStockData, RefinedData } from "~/utils/type";
-import sampleJsonData from "~/utils/teslaAll.json";
+import sampleTeslaJsonData from "~/utils/teslaAll.json";
+import sampleAppleJsonData from "~/utils/appleAll.json";
+import sampleGoogleJsonData from "~/utils/googleAll.json";
 
 const chartType = ref("area");
 
@@ -18,7 +20,7 @@ const stockList = ref([
   { name: "Apple", code: "AAPL" },
   { name: "Amazon", code: "AMZN" },
   { name: "Microsoft", code: "MSFT" },
-  { name: "Nvidia", code: "NVDA" },
+  // { name: "Nvidia", code: "NVDA" }, stock split not ok
   { name: "AMD", code: "AMD" },
   { name: "Meta", code: "META" },
 ]);
@@ -31,7 +33,7 @@ const config = useRuntimeConfig();
 // const rawData = ref<RawStockData>();
 const finalData = ref<RefinedData[]>([]);
 const finalDataWithVolume = ref<RefinedData[]>([]);
-const isLiveData = ref(true);
+const isLiveData = ref(false);
 
 const compareDataOne = ref<RefinedData[]>([]);
 const compareDataTwo = ref<RefinedData[]>([]);
@@ -43,9 +45,12 @@ const fetchStockData = async (
   const apiKey = config.public.stockApiKey;
   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${apiKey}`;
 
+  if (isLiveData.value === false) {
+    return undefined;
+  }
   try {
     const response = await $fetch<RawStockData>(url);
-    console.log("Fetched raw data:", response);
+    console.log("Fetched from api ...");
     return response; // if (!response) {
     //   throw new Error(`API error ...`);
     // }
@@ -64,12 +69,20 @@ const fetchStockData = async (
 };
 
 onMounted(async () => {
-  const rawData = await fetchStockData("TSLA");
+  // const rawData = await fetchStockData("TSLA");
+  const rawData = {}; // set for reducing api call on first rendered
 
   if (rawData && rawData["Time Series (Daily)"]) {
     finalData.value = getDataFromJson(rawData);
     finalDataWithVolume.value = getVolumeDataFromJson(rawData);
+  } else {
+    console.log("showing sample data");
+    finalData.value = getDataFromJson(sampleTeslaJsonData);
+    finalDataWithVolume.value = getVolumeDataFromJson(sampleTeslaJsonData);
   }
+
+  compareDataOne.value = getDataFromJson(sampleAppleJsonData);
+  compareDataTwo.value = getDataFromJson(sampleGoogleJsonData);
 });
 
 watch(selectedStock, async () => {
@@ -78,6 +91,9 @@ watch(selectedStock, async () => {
   if (response && response["Time Series (Daily)"]) {
     finalData.value = getDataFromJson(response);
     finalDataWithVolume.value = getVolumeDataFromJson(response);
+  } else {
+    finalData.value = getDataFromJson(sampleTeslaJsonData);
+    finalDataWithVolume.value = getVolumeDataFromJson(sampleTeslaJsonData);
   }
 });
 
@@ -86,6 +102,8 @@ watch(compareStockOne, async () => {
   const response = await fetchStockData(compareStockOne.value.code);
   if (response && response["Time Series (Daily)"]) {
     compareDataOne.value = getDataFromJson(response);
+  } else {
+    compareDataOne.value = getDataFromJson(sampleAppleJsonData);
   }
 });
 
@@ -94,6 +112,8 @@ watch(compareStockTwo, async () => {
   const response = await fetchStockData(compareStockTwo.value.code);
   if (response && response["Time Series (Daily)"]) {
     compareDataTwo.value = getDataFromJson(response);
+  } else {
+    compareDataTwo.value = getDataFromJson(sampleGoogleJsonData);
   }
 });
 </script>
@@ -120,7 +140,7 @@ watch(compareStockTwo, async () => {
         <div class="text-xs text-gray-500">
           {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
-        {{ finalData[498] }}
+        <!-- {{ finalData[498] }} -->
 
         <LineChart
           :quote="selectedStock?.name"
@@ -136,8 +156,6 @@ watch(compareStockTwo, async () => {
         </div>
 
         <CompareChart
-          class="h-70"
-          :is-live="isLiveData"
           :api-data="finalData"
           :compare-one="compareDataOne"
           :compare-two="compareDataTwo"
@@ -186,7 +204,7 @@ watch(compareStockTwo, async () => {
           {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
         <!-- <p>{{ chartType }}</p> -->
-        {{ finalData[498] }}
+        <!-- {{ finalData[498] }} -->
 
         <MultipleTypeChart
           :api-data="finalData"
@@ -200,7 +218,7 @@ watch(compareStockTwo, async () => {
         <div class="text-xs text-gray-500">
           {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
         </div>
-        {{ finalData[498] }}
+        <!-- {{ finalData[498] }} -->
         <VolumeChart
           :api-data="finalData"
           :api-volume-data="finalDataWithVolume"

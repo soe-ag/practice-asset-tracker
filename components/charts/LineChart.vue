@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import sampleJsonData from "~/utils/teslaAll.json";
+// import sampleJsonData from "~/utils/teslaAll.json";
 
-const sampleData = getDataFromJson(sampleJsonData);
+// const sampleData = getDataFromJson(sampleJsonData);
 
 const props = defineProps({
   quote: {
@@ -26,6 +26,7 @@ function getChartSeriesConstructorName(type) {
 }
 
 let series;
+let maSeries;
 let chart;
 const chartOptions = {
   layout: {
@@ -83,7 +84,8 @@ const addSeriesAndData = () => {
   const seriesConstructor = getChartSeriesConstructorName(chartType);
   series = chart[seriesConstructor]();
   series.setData(
-    props.isLive && props.apiData.length > 0 ? props.apiData : sampleData
+    // props.isLive && props.apiData.length > 0 ? props.apiData : sampleData
+    props.apiData
   );
   series.priceScale().applyOptions({
     scaleMargins: {
@@ -93,10 +95,31 @@ const addSeriesAndData = () => {
   });
 };
 
+function calculateMovingAverageSeriesData(candleData, maLength) {
+  const maData = [];
+
+  for (let i = 0; i < candleData.length; i++) {
+    if (i < maLength) {
+      // Provide whitespace data points until the MA can be calculated
+      maData.push({ time: candleData[i].time });
+    } else {
+      // Calculate the moving average, slow but simple way
+      let sum = 0;
+      for (let j = 0; j < maLength; j++) {
+        sum += candleData[i - j].value;
+      }
+      const maValue = sum / maLength;
+      maData.push({ time: candleData[i].time, value: maValue });
+    }
+  }
+
+  return maData;
+}
+
 onMounted(async () => {
   // Create the Lightweight Charts Instance using the container ref.
 
-  while (props.isLive && props.apiData.length === 0) {
+  while (props.apiData.length === 0) {
     await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
   }
 
@@ -143,7 +166,8 @@ onMounted(async () => {
       const dateStr = param.time;
       toolTip.style.display = "block";
       const data = param.seriesData.get(series);
-      const price = data.value !== undefined ? data.value : data.close;
+      const price = data.value;
+      // const price = data.value !== undefined ? data.value : data.close;
       toolTip.innerHTML = `<div style="color: ${"rgba( 38, 166, 154, 1)"}">${
         props.quote
       } Inc.</div><div style="font-size: 24px; margin: 4px 0px; color: ${"white"}">
@@ -167,34 +191,14 @@ onMounted(async () => {
     }
   });
 
-  function calculateMovingAverageSeriesData(candleData, maLength) {
-    const maData = [];
-
-    for (let i = 0; i < candleData.length; i++) {
-      if (i < maLength) {
-        // Provide whitespace data points until the MA can be calculated
-        maData.push({ time: candleData[i].time });
-      } else {
-        // Calculate the moving average, slow but simple way
-        let sum = 0;
-        for (let j = 0; j < maLength; j++) {
-          sum += candleData[i - j].value;
-        }
-        const maValue = sum / maLength;
-        maData.push({ time: candleData[i].time, value: maValue });
-      }
-    }
-
-    return maData;
-  }
-
   const maData = calculateMovingAverageSeriesData(
-    props.isLive ? props.apiData : sampleData,
+    // props.isLive ? props.apiData : sampleData,
+    props.apiData,
     50
   );
   // console.log(maData);
 
-  const maSeries = chart.addLineSeries({
+  maSeries = chart.addLineSeries({
     color: "rgb(225, 87, 90)",
     lineWidth: 1,
   });
@@ -241,20 +245,16 @@ onUnmounted(() => {
 watch(
   () => props.apiData,
   (newData) => {
-    if (!props.isLive) return;
-    console.log("newData is coming", newData[0].value);
+    // if (!props.isLive) return;
     if (!series) return;
+    console.log("Line Chart: data updated", newData[0].value);
     series.setData(newData);
 
     // todo: not changing
-    // const maData = calculateMovingAverageSeriesData(newData, 50);
-    // // console.log(maData);
-
-    // const maSeries = chart.addLineSeries({
-    //   color: "rgb(225, 87, 90)",
-    //   lineWidth: 1,
-    // });
-    // maSeries.setData(maData);
+    const newMaData = calculateMovingAverageSeriesData(newData, 50);
+    if (!maSeries) return;
+    console.log("MA also updated");
+    maSeries.setData(newMaData);
   }
 );
 
@@ -295,8 +295,8 @@ watch(
 
 <template>
   <div>
-    {{ props.isLive }},
-    {{ props.apiData[495] ? props.apiData[498].value : "no api data" }}
+    <!-- {{ props.isLive }},
+    {{ props.apiData[495] ? props.apiData[498].value : "no api data" }} -->
     <div ref="chartContainer" class="h-80" />
   </div>
 </template>

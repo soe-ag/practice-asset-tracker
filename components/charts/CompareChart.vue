@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineExpose } from "vue";
 import { createChart } from "lightweight-charts";
-import sampleTeslaJsonData from "~/utils/teslaAll.json";
-import sampleAppleJsonData from "~/utils/appleAll.json";
-import sampleGoogleJsonData from "~/utils/googleAll.json";
+// import sampleTeslaJsonData from "~/utils/teslaAll.json";
+// import sampleAppleJsonData from "~/utils/appleAll.json";
+// import sampleGoogleJsonData from "~/utils/googleAll.json";
 
-const sampleTeslaData = getDataFromJson(sampleTeslaJsonData);
-const sampleAppleData = getDataFromJson(sampleAppleJsonData);
-const sampleGoogleData = getDataFromJson(sampleGoogleJsonData);
+// const sampleTeslaData = getDataFromJson(sampleTeslaJsonData);
+// const sampleAppleData = getDataFromJson(sampleAppleJsonData);
+// const sampleGoogleData = getDataFromJson(sampleGoogleJsonData);
 
 const props = defineProps({
   apiData: {
@@ -22,10 +22,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  isLive: {
-    type: Boolean,
-    default: false,
-  },
+  // isLive: {
+  //   type: Boolean,
+  //   default: false,
+  // },
 });
 
 // // Function to get the correct series constructor name for current series type.
@@ -79,32 +79,28 @@ const resizeHandler = () => {
 //   series = chart[seriesConstructor](props.seriesOptions);
 //   series.setData(props.data);
 // };
+let lineSeriesOne;
+let lineSeriesTwo;
+let lineSeriesThree;
 
-onMounted(() => {
+onMounted(async () => {
+  while (props.apiData.length === 0) {
+    await new Promise((resolve) => setTimeout(resolve, 50)); // Check every 50ms
+  }
   // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
 
-  const lineSeriesOne = chart.addLineSeries({ color: "#2962FF" });
-  const lineSeriesTwo = chart.addLineSeries({ color: "rgb(225, 87, 90)" });
-  const lineSeriesThree = chart.addLineSeries({ color: "rgb(242, 142, 44)" });
+  lineSeriesOne = chart.addLineSeries({ color: "#2962FF" });
+  lineSeriesTwo = chart.addLineSeries({ color: "rgb(225, 87, 90)" });
+  lineSeriesThree = chart.addLineSeries({ color: "rgb(242, 142, 44)" });
 
   // const lineSeriesOneData = getDataFromJson(dataOne);
   // const lineSeriesTwoData = getDataFromJson(dataTwo);
   // const lineSeriesThreeData = getDataFromJson(dataThree);
 
-  lineSeriesOne.setData(
-    props.isLive && props.apiData ? props.apiData : sampleTeslaData
-  );
-  lineSeriesTwo.setData(
-    props.isLive && props.compareOne.length > 0
-      ? props.compareOne
-      : sampleAppleData
-  );
-  lineSeriesThree.setData(
-    props.isLive && props.compareTwo.length > 0
-      ? props.compareTwo
-      : sampleGoogleData
-  );
+  lineSeriesOne.setData(props.apiData);
+  lineSeriesTwo.setData(props.compareOne);
+  lineSeriesThree.setData(props.compareTwo);
 
   //   if (priceScaleOptions) {
   //     chart.priceScale().applyOptions(priceScaleOptions);
@@ -163,13 +159,32 @@ watch(
 //   }
 // );
 
-// watch(
-//   () => data,
-//   (newData) => {
-//     if (!series) return;
-//     series.setData(newData);
-//   }
-// );
+watch(
+  () => props.apiData,
+  (newData) => {
+    if (!lineSeriesOne) return;
+    console.log("Compare Chart: mainData updated");
+    lineSeriesOne.setData(newData);
+  }
+);
+
+watch(
+  () => props.compareOne,
+  (newData) => {
+    if (!lineSeriesTwo) return;
+    console.log("Compare Chart: compareOne updated");
+    lineSeriesTwo.setData(newData);
+  }
+);
+
+watch(
+  () => props.compareTwo,
+  (newData) => {
+    if (!lineSeriesThree) return;
+    console.log("Compare Chart: compareTwo updated");
+    lineSeriesThree.setData(newData);
+  }
+);
 
 watch(
   () => chartOptions,
@@ -205,5 +220,12 @@ watch(
 </script>
 
 <template>
+  <!-- {{ props.apiData[498] ? props.apiData[498].value : "no api data" }}
+  {{
+    props.compareOne[498] ? props.compareOne[498].value : "no compareOne data"
+  }}
+  {{
+    props.compareTwo[498] ? props.compareTwo[498].value : "no compareTwo data"
+  }} -->
   <div ref="chartContainer" class="h-80" />
 </template>
