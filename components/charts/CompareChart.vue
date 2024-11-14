@@ -90,9 +90,9 @@ onMounted(async () => {
   // Create the Lightweight Charts Instance using the container ref.
   chart = createChart(chartContainer.value, chartOptions);
 
-  lineSeriesOne = chart.addLineSeries({ color: "#2962FF" });
-  lineSeriesTwo = chart.addLineSeries({ color: "rgb(225, 87, 90)" });
-  lineSeriesThree = chart.addLineSeries({ color: "rgb(242, 142, 44)" });
+  lineSeriesOne = chart.addLineSeries({ color: "#2962ff" });
+  lineSeriesTwo = chart.addLineSeries({ color: "#e15759" });
+  lineSeriesThree = chart.addLineSeries({ color: "#f28e2c" });
 
   // const lineSeriesOneData = getDataFromJson(dataOne);
   // const lineSeriesTwoData = getDataFromJson(dataTwo);

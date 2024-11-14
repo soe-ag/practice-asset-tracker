@@ -143,7 +143,7 @@ onMounted(async () => {
 
   // Create and style the tooltip html element
   const toolTip = document.createElement("div");
-  toolTip.style = `width: 72px; height: 75px; position: absolute; display: none; padding: 6px; box-sizing: border-box; font-size: 10px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`;
+  toolTip.style = `width: 75px; height: 75px; position: absolute; display: none; padding: 6px; box-sizing: border-box; font-size: 10px; text-align: left; z-index: 1000; top: 12px; left: 12px; pointer-events: none; border: 1px solid; border-radius: 2px;font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;`;
   toolTip.style.background = "black";
   toolTip.style.color = "white";
   toolTip.style.borderColor = "#2962FF";

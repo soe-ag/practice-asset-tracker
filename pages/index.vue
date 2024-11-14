@@ -33,7 +33,7 @@ const config = useRuntimeConfig();
 // const rawData = ref<RawStockData>();
 const finalData = ref<RefinedData[]>([]);
 const finalDataWithVolume = ref<RefinedData[]>([]);
-const isLiveData = ref(false);
+const isLiveData = ref(false); // set to false in dev
 
 const compareDataOne = ref<RefinedData[]>([]);
 const compareDataTwo = ref<RefinedData[]>([]);
@@ -120,7 +120,9 @@ watch(compareStockTwo, async () => {
 
 <template>
   <div class="bg-#000">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 p-6 text-gray-400">
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-2 px-4 pt-4 pb-2 text-gray-400"
+    >
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <div class="flex gap-2 items-center">
           <h4 class="">Line Chart with MA-50</h4>
@@ -135,10 +137,18 @@ watch(compareStockTwo, async () => {
             :pt="{
               optionLabel: { class: 'text-xs font-sans	' },
             }"
+            :disabled="!isLiveData"
           />
         </div>
         <div class="text-xs text-gray-500">
-          {{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}
+          <div class="flex gap-1 items-center">
+            <Checkbox v-model="isLiveData" binary size="small" />
+            <p>{{ isLiveData ? "Live Data" : "Sample Data (Tesla)" }}</p>
+            <p v-if="isLiveData" class="text-red-4 opacity-60 text-2.5">
+              (Once you reach 25 API requests in a day, sample data will be
+              displayed instead)
+            </p>
+          </div>
         </div>
         <!-- {{ finalData[498] }} -->
 
@@ -151,8 +161,15 @@ watch(compareStockTwo, async () => {
 
       <div class="b-2 b-solid rounded-2 b-gray-800 p-4">
         <h4 class="mb-2">Series Comparison Chart</h4>
-        <div class="text-xs text-gray-500">
-          {{ isLiveData ? "Live Data" : "Sample Data (Tesla, Apple, Google)" }}
+        <div class="flex gap-2 items-center">
+          <div class="text-xs text-gray-500">
+            {{ isLiveData ? "Live Data" : "Sample Data" }}
+          </div>
+          <PartsComparisonLegend
+            :label1="selectedStock?.name"
+            :label2="compareStockOne?.name"
+            :label3="compareStockTwo?.name"
+          />
         </div>
 
         <CompareChart
@@ -231,7 +248,7 @@ watch(compareStockTwo, async () => {
     </div>
 
     <footer class="text-xs text-end my-2 text-gray-400">
-      {{ selectedStock?.code }}, is live data: {{ isLiveData }} / TradingView
+      <!-- {{ selectedStock?.code }}, is live data: {{ isLiveData }} / TradingView -->
       Lightweight Charts™ Copyright (с) 2024 TradingView, Inc.
       https://www.tradingview.com/
     </footer>
