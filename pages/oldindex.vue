@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { ChartOptions } from "chart.js";
+// import type { ChartOptions } from "chart.js";
 // import { convertToSimpleType } from "~/utils/utils";
 // import { useRuntimeConfig } from "#app";
-import testdata1 from "~/utils/testdata1.json";
-import testdata2 from "~/utils/testdata2.json";
-import testdata3 from "~/utils/testdata3.json";
+// import testdata1 from "~/utils/testdata1.json";
+// import testdata2 from "~/utils/testdata2.json";
+// import testdata3 from "~/utils/testdata3.json";
 // import type { StockData } from "~/utils/type";
 
 // const config = useRuntimeConfig();
@@ -26,9 +26,9 @@ import testdata3 from "~/utils/testdata3.json";
 // });
 
 // const firstRawData = ref();
-const dataA = ref<StockData[]>();
-const dataB = ref<StockData[]>();
-const dataC = ref<StockData[]>();
+// const dataA = ref<RawStockData[]>();
+// const dataB = ref<RawStockData[]>();
+// const dataC = ref<RawStockData[]>();
 
 const stockA = ref<DropDownType | null>();
 const stockB = ref<DropDownType | null>();
@@ -82,62 +82,62 @@ onMounted(() => {
   // sampleFetch("TSLA");
 });
 
-watch(
-  () => stockA.value,
-  (newValue) => {
-    if (newValue) {
-      switch (newValue.code) {
-        case "IBM":
-          dataA.value = getDataFromJson(testdata1);
-          break;
-        case "TSLA":
-          dataA.value = getDataFromJson(testdata2);
-          break;
-        case "GOOG":
-          dataA.value = getDataFromJson(testdata3);
-          break;
-      }
-    }
-  }
-);
+// watch(
+//   () => stockA.value,
+//   (newValue) => {
+//     if (newValue) {
+//       switch (newValue.code) {
+//         case "IBM":
+//           dataA.value = getDataFromJson(testdata1);
+//           break;
+//         case "TSLA":
+//           dataA.value = getDataFromJson(testdata2);
+//           break;
+//         case "GOOG":
+//           dataA.value = getDataFromJson(testdata3);
+//           break;
+//       }
+//     }
+//   }
+// );
 
-watch(
-  () => stockB.value,
-  (newValue) => {
-    if (newValue) {
-      switch (newValue.code) {
-        case "IBM":
-          dataB.value = getDataFromJson(testdata1);
-          break;
-        case "TSLA":
-          dataB.value = getDataFromJson(testdata2);
-          break;
-        case "GOOG":
-          dataB.value = getDataFromJson(testdata3);
-          break;
-      }
-    }
-  }
-);
+// watch(
+//   () => stockB.value,
+//   (newValue) => {
+//     if (newValue) {
+//       switch (newValue.code) {
+//         case "IBM":
+//           dataB.value = getDataFromJson(testdata1);
+//           break;
+//         case "TSLA":
+//           dataB.value = getDataFromJson(testdata2);
+//           break;
+//         case "GOOG":
+//           dataB.value = getDataFromJson(testdata3);
+//           break;
+//       }
+//     }
+//   }
+// );
 
-watch(
-  () => stockC.value,
-  (newValue) => {
-    if (newValue) {
-      switch (newValue.code) {
-        case "IBM":
-          dataC.value = getDataFromJson(testdata1);
-          break;
-        case "TSLA":
-          dataC.value = getDataFromJson(testdata2);
-          break;
-        case "GOOG":
-          dataC.value = getDataFromJson(testdata3);
-          break;
-      }
-    }
-  }
-);
+// watch(
+//   () => stockC.value,
+//   (newValue) => {
+//     if (newValue) {
+//       switch (newValue.code) {
+//         case "IBM":
+//           dataC.value = getDataFromJson(testdata1);
+//           break;
+//         case "TSLA":
+//           dataC.value = getDataFromJson(testdata2);
+//           break;
+//         case "GOOG":
+//           dataC.value = getDataFromJson(testdata3);
+//           break;
+//       }
+//     }
+//   }
+// );
 
 // watch(
 //   [() => stockA.value, () => stockB.value, () => stockC.value],
@@ -151,146 +151,146 @@ watch(
 //   }
 // );
 
-const chartData2 = computed(() => {
-  const labels: string[] = dataA.value
-    ? dataA.value.map((item) => item.date)
-    : [];
-  const chartDataA: number[] = stockA.value
-    ? dataA.value
-      ? dataA.value.map((item) => item.price)
-      : []
-    : [];
+// const chartData2 = computed(() => {
+//   const labels: string[] = dataA.value
+//     ? dataA.value.map((item) => item.date)
+//     : [];
+//   const chartDataA: number[] = stockA.value
+//     ? dataA.value
+//       ? dataA.value.map((item) => item.price)
+//       : []
+//     : [];
 
-  const chartDataB: number[] = stockB.value
-    ? dataB.value
-      ? dataB.value.map((item) => item.price)
-      : []
-    : [];
+//   const chartDataB: number[] = stockB.value
+//     ? dataB.value
+//       ? dataB.value.map((item) => item.price)
+//       : []
+//     : [];
 
-  const chartDataC: number[] = stockC.value
-    ? dataC.value
-      ? dataC.value.map((item) => item.price)
-      : []
-    : [];
+//   const chartDataC: number[] = stockC.value
+//     ? dataC.value
+//       ? dataC.value.map((item) => item.price)
+//       : []
+//     : [];
 
-  return {
-    labels,
-    datasets: [
-      {
-        label: stockA.value?.name ?? "not set",
-        data: chartDataA,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#417ABE",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-      {
-        label: stockB.value?.name ?? "not set",
-        data: chartDataB,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#cf352e",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-      {
-        label: stockC.value?.name ?? "not set",
-        data: chartDataC,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#00B8CD",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-    ],
-  };
-});
+//   return {
+//     labels,
+//     datasets: [
+//       {
+//         label: stockA.value?.name ?? "not set",
+//         data: chartDataA,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#417ABE",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//       {
+//         label: stockB.value?.name ?? "not set",
+//         data: chartDataB,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#cf352e",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//       {
+//         label: stockC.value?.name ?? "not set",
+//         data: chartDataC,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#00B8CD",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//     ],
+//   };
+// });
 
-// linear percentage change
-const chartDataPercentage = computed(() => {
-  const labels: string[] = dataA.value
-    ? dataA.value.map((item) => item.date)
-    : [];
+// // linear percentage change
+// const chartDataPercentage = computed(() => {
+//   const labels: string[] = dataA.value
+//     ? dataA.value.map((item) => item.date)
+//     : [];
 
-  const baseA = dataA.value ? dataA.value[0].price : 0;
-  const chartDataA: number[] = stockA.value
-    ? dataA.value
-      ? dataA.value.map((item) => ((item.price - baseA) / baseA) * 100)
-      : []
-    : [];
+//   const baseA = dataA.value ? dataA.value[0].price : 0;
+//   const chartDataA: number[] = stockA.value
+//     ? dataA.value
+//       ? dataA.value.map((item) => ((item.price - baseA) / baseA) * 100)
+//       : []
+//     : [];
 
-  const baseB = dataB.value ? dataB.value[0].price : 0;
-  const chartDataB: number[] = stockB.value
-    ? dataB.value
-      ? dataB.value.map((item) => ((item.price - baseB) / baseB) * 100)
-      : []
-    : [];
+//   const baseB = dataB.value ? dataB.value[0].price : 0;
+//   const chartDataB: number[] = stockB.value
+//     ? dataB.value
+//       ? dataB.value.map((item) => ((item.price - baseB) / baseB) * 100)
+//       : []
+//     : [];
 
-  const baseC = dataC.value ? dataC.value[0].price : 0;
-  const chartDataC: number[] = stockC.value
-    ? dataC.value
-      ? dataC.value.map((item) => ((item.price - baseC) / baseC) * 100)
-      : []
-    : [];
+//   const baseC = dataC.value ? dataC.value[0].price : 0;
+//   const chartDataC: number[] = stockC.value
+//     ? dataC.value
+//       ? dataC.value.map((item) => ((item.price - baseC) / baseC) * 100)
+//       : []
+//     : [];
 
-  return {
-    labels,
-    datasets: [
-      {
-        label: stockA.value?.name ?? "not set",
-        data: chartDataA,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#417ABE",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-      {
-        label: stockB.value?.name ?? "not set",
-        data: chartDataB,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#cf352e",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-      {
-        label: stockC.value?.name ?? "not set",
-        data: chartDataC,
-        // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
-        fill: false,
-        backgroundColor: "#FFFFFF ",
-        borderWidth: 1,
-        borderColor: "#00B8CD",
-        // backgroundColor: "#cf352e",
-        tension: 0.3,
-        // radius: 1,
-        pointStyle: false,
-      },
-    ],
-  };
-});
+//   return {
+//     labels,
+//     datasets: [
+//       {
+//         label: stockA.value?.name ?? "not set",
+//         data: chartDataA,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#417ABE",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//       {
+//         label: stockB.value?.name ?? "not set",
+//         data: chartDataB,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#cf352e",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//       {
+//         label: stockC.value?.name ?? "not set",
+//         data: chartDataC,
+//         // backgroundColor: ["#417ABE", "#00B8CD", "#009DFF", "#78D7FF"],
+//         fill: false,
+//         backgroundColor: "#FFFFFF ",
+//         borderWidth: 1,
+//         borderColor: "#00B8CD",
+//         // backgroundColor: "#cf352e",
+//         tension: 0.3,
+//         // radius: 1,
+//         pointStyle: false,
+//       },
+//     ],
+//   };
+// });
 
 // CumulativeLogScale change
 // const chartDataLogScale = computed(() => {
@@ -365,17 +365,17 @@ const chartDataPercentage = computed(() => {
 //   };
 // });
 
-const chartOption2: ChartOptions = {
-  plugins: {
-    legend: {
-      position: "right",
-    },
-    title: {
-      display: true,
-      text: "Chart.js Line Chart",
-    },
-  },
-};
+// const chartOption2: ChartOptions = {
+//   plugins: {
+//     legend: {
+//       position: "right",
+//     },
+//     title: {
+//       display: true,
+//       text: "Chart.js Line Chart",
+//     },
+//   },
+// };
 
 // const chartOption3: ChartOptions = {
 //   plugins: {
@@ -456,7 +456,7 @@ const chartOption2: ChartOptions = {
       />
     </div>
     <!-- <pre>{{ dataA }}</pre> -->
-
+    <!-- 
     <div class="grid grid-cols-2 gap-4">
       <PartsChart
         type="line"
@@ -471,7 +471,7 @@ const chartOption2: ChartOptions = {
         :options="chartOption2"
         class="w-full m-auto h-100 border-2 border-amber"
       />
-    </div>
+    </div> -->
 
     <!-- <PartsChart
       type="line"
